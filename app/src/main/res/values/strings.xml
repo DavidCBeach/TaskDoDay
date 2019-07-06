@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TaskDoDay</string>
+    <string name="button">add thing</string>
 </resources>
