@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +24,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView textView;
+        public RelativeLayout parentView;
         public MyViewHolder(View v) {
             super(v);
             textView = v.findViewById(R.id.content);
+            parentView = v.findViewById(R.id.taskLayout);
         }
     }
 
@@ -44,11 +48,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         Log.d(TAG, "taco");
         holder.textView.setText(mDataset.get(position));
+        holder.parentView.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                Context context = mContext;
+                CharSequence text = mDataset.get(position);
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
+        });
 
     }
 
