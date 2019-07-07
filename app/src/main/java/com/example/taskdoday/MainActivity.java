@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -62,49 +63,65 @@ public class MainActivity extends AppCompatActivity {
         bt = findViewById(R.id.addtask);
         bt.setVisibility(View.GONE);
         calendar = Calendar.getInstance();
-        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd");
-        String strDate =  mdformat.format(calendar.getTime());
-        date = findViewById(R.id.date);
-        date.setText(strDate);
+        setDate();
 
+        refreshTasks();
 
-        ArrayList<String> myDataset = Read();
-
-        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID);
-        recyclerView.setAdapter(mAdapter);
-
-
-
-        Context context = getApplicationContext();
-        CharSequence text = calendar.getTime().toString();
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
 
         setSwipes();
 
-// Create a new map of values, where column names are the keys
+        // Create a new map of values, where column names are the keys
 
 
 
     }
+    private void setDate(){
+        SimpleDateFormat mdformat = new SimpleDateFormat("E, MM/dd");
+        String strDate =  mdformat.format(calendar.getTime());
+        date = findViewById(R.id.date);
+        Calendar today = Calendar.getInstance();
+        String stoday= mdformat.format(today.getTime());
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(5,1);
+        String stomorrow = mdformat.format(tomorrow.getTime());
+        Calendar yesterday = Calendar.getInstance();
+        yesterday.add(5,-1);
+        String syesterday = mdformat.format(yesterday.getTime());
+        if(stoday.equals(strDate)){
+            strDate = "Today";
+        } else if(stomorrow.equals(strDate)) {
+            strDate = "Tomorrow";
+        } else if(syesterday.equals(strDate)){
+            strDate = "Yesterday";
+        }
+        date.setText(strDate);
+    }
+
     private void SwipeRight() {
         Toast.makeText(getApplicationContext(), "right", Toast.LENGTH_SHORT).show();
         calendar.add(5,-1);
-        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd");
-        String setDate =  mdformat.format(calendar.getTime());
-        date.setText(setDate);
+        setDate();
+        if(getIsOld()){
+            Button atton = findViewById(R.id.atton);
+            atton.setVisibility(View.GONE);
+        } else {
+            Button atton = findViewById(R.id.atton);
+            atton.setVisibility(View.VISIBLE);
+        }
         refreshTasks();
     }
     private void SwipeLeft()  {
         Toast.makeText(getApplicationContext(), "left", Toast.LENGTH_SHORT).show();
         calendar.add(5,1);
-        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd");
-        String setDate =  mdformat.format(calendar.getTime());
-        date.setText(setDate);
+        setDate();
         refreshTasks();
+        if(getIsOld()){
+            Button atton = findViewById(R.id.atton);
+            atton.setVisibility(View.GONE);
+        } else {
+            Button atton = findViewById(R.id.atton);
+            atton.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -201,17 +218,34 @@ public class MainActivity extends AppCompatActivity {
 
     public void addthing(View view) {
         Button atton = findViewById(R.id.atton);
+        int margin = 14;
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + atton.getText().toString());
         if(atton.getText().toString().equals("add thing")){
             et.setVisibility(View.VISIBLE);
             bt.setVisibility(View.VISIBLE);
 
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    .475f
+            );
+            atton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorPrimary));
+            param.setMargins(margin,margin,margin,margin);
+            atton.setLayoutParams(param);
             atton.setText("Done");
             et.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
 
         } else {
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1.0f
+            );
+            atton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorAccent));
+            param.setMargins(margin,margin,margin,margin);
+            atton.setLayoutParams(param);
             et.setVisibility(View.GONE);
             bt.setVisibility(View.GONE);
             atton.setText("add thing");
@@ -235,10 +269,19 @@ public class MainActivity extends AppCompatActivity {
         refreshTasks();
 
     }
+    private boolean getIsOld(){
+        Calendar yesterday = Calendar.getInstance();
+        yesterday.add(5,-1);
+        if(calendar.before(yesterday)){
+            return true;
+        }
+        return false;
+    }
     private void refreshTasks(){
         ArrayList<String> myDataset = Read();
+
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID);
+        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld());
         recyclerView.setAdapter(mAdapter);
     }
     private void setSwipes(){

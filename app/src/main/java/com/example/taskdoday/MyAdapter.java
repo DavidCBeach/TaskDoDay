@@ -28,6 +28,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
     private ArrayList<String> mID;
     private int mPosition;
     private Context mContext;
+    private boolean mIsOld;
 
     @Override
     public boolean onLongClick(View v) {
@@ -62,11 +63,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Context context, ArrayList<String> myDataset, ArrayList<Boolean> myStatus, ArrayList<String> myID) {
+    public MyAdapter(Context context, ArrayList<String> myDataset, ArrayList<Boolean> myStatus, ArrayList<String> myID,boolean isOld) {
         mDataset = myDataset;
         mStatus = myStatus;
         mID = myID;
         mContext = context;
+        mIsOld = isOld;
     }
 
     // Create new views (invoked by the layout manager)
@@ -90,18 +92,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
         } else {
             holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp));
         }
-        holder.checkView.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
-                if(mStatus.get(position)){
-                    holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp));
-                    Update(mID.get(position), 0);
-                } else {
-                    holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
-                    Update(mID.get(position), 1);
-                }
+        if(!mIsOld){
+            holder.checkView.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View view){
+                    if(mStatus.get(position)){
+                        holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp));
+                        Update(mID.get(position), 0);
+                    } else {
+                        holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
+                        Update(mID.get(position), 1);
+                    }
 
-            }
-        });
+                }
+            });
+        }
+
 
     }
 
