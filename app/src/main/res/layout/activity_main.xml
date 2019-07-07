@@ -11,7 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimary2"
         android:padding="10dp"
         android:id="@+id/datezone">
         <TextView
@@ -75,7 +75,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/et"
         android:layout_marginTop="-20dp"
-        android:layout_marginBottom="53dp"
+        android:layout_marginBottom="54dp"
         android:scrollbars="vertical" />
 
 
