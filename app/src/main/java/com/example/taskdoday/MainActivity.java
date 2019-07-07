@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private Button bt;
     private TextView date;
     private Calendar calendar;
+    private ArrayList<Boolean> myStatus;
+    private ArrayList<String> myID;
 
     FeedReaderDbHelper dbHelper;
     @Override
@@ -51,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
+        myID = new ArrayList<>();
+        myStatus = new ArrayList<>();
         // specify an adapter (see also next example)
 
         et = findViewById(R.id.et);
@@ -66,9 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         ArrayList<String> myDataset = Read();
+
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-        mAdapter = new MyAdapter(getApplicationContext(),myDataset);
+        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID);
         recyclerView.setAdapter(mAdapter);
+
 
 
         Context context = getApplicationContext();
@@ -107,22 +112,24 @@ public class MainActivity extends AppCompatActivity {
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-// Define a projection that specifies which columns from the database
-// you will actually use after this query.
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
         String[] projection = {
                 BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT
+                FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_DATE
         };
 
-// Filter results WHERE "title" = 'My Title'
+        // Filter results WHERE "title" = 'My Title'
         String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_DATE + " = ?";
         //String[] selectionArgs = { "My Title" };
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         String strDate =  mdformat.format(calendar.getTime());
         String[] selectionArgs = {strDate};
 
-// How you want the results sorted in the resulting Cursor
-        String sortOrder = FeedReaderContract.FeedEntry._ID + " DESC";
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
 
         Cursor cursor = db.query(
                 FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
@@ -133,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
                 null,                   // don't filter by row groups
                 sortOrder               // The sort order
         );
+        myID = new ArrayList<>();
+        myStatus = new ArrayList<>();
         String contents = new String();
         ArrayList<String> listCon = new ArrayList();
         while(cursor.moveToNext()) {
@@ -140,6 +149,19 @@ public class MainActivity extends AppCompatActivity {
                     cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
             contents = contents + content;
             listCon.add(content);
+            String contentid = cursor.getString(
+                    cursor.getColumnIndexOrThrow(BaseColumns._ID));
+            myID.add(contentid);
+            Integer conten = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
+            if(conten == 1){
+                myStatus.add(true);
+            } else {
+                myStatus.add(false);
+            }
+
+        }
+        while(cursor.moveToNext()) {
 
         }
         final TextView helloTextView = (TextView) findViewById(R.id.taskshow);
@@ -154,32 +176,14 @@ public class MainActivity extends AppCompatActivity {
         return listCon;
 
     }
-    private void Update() {
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//// New value for one column
-//        String title = "MyNewTitle";
-//        ContentValues values = new ContentValues();
-//        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE, title);
-//
-//// Which row to update, based on the title
-//        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE + " LIKE ?";
-//        String[] selectionArgs = { "MyOldTitle" };
-//
-//        int count = db.update(
-//                FeedReaderContract.FeedEntry.TABLE_NAME,
-//                values,
-//                selection,
-//                selectionArgs);
 
-    }
     private void Write(String content) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         String strDate =  mdformat.format(calendar.getTime());
         String date = strDate;
-        String status = "0";
+        Integer status = 0;
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
@@ -234,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
     private void refreshTasks(){
         ArrayList<String> myDataset = Read();
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-        mAdapter = new MyAdapter(getApplicationContext(),myDataset);
+        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID);
         recyclerView.setAdapter(mAdapter);
     }
     private void setSwipes(){
