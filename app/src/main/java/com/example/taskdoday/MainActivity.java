@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private Button bt;
     private TextView date;
     private Calendar calendar;
+    private ArrayList<Boolean> myStatus;
+    private ArrayList<String> myID;
 
     FeedReaderDbHelper dbHelper;
     @Override
@@ -51,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
+        myID = new ArrayList<>();
+        myStatus = new ArrayList<>();
         // specify an adapter (see also next example)
 
         et = findViewById(R.id.et);
@@ -59,47 +63,65 @@ public class MainActivity extends AppCompatActivity {
         bt = findViewById(R.id.addtask);
         bt.setVisibility(View.GONE);
         calendar = Calendar.getInstance();
-        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd");
-        String strDate =  mdformat.format(calendar.getTime());
-        date = findViewById(R.id.date);
-        date.setText(strDate);
+        setDate();
 
+        refreshTasks();
 
-        ArrayList<String> myDataset = Read();
-        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-        mAdapter = new MyAdapter(getApplicationContext(),myDataset);
-        recyclerView.setAdapter(mAdapter);
-
-
-        Context context = getApplicationContext();
-        CharSequence text = calendar.getTime().toString();
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
 
         setSwipes();
 
-// Create a new map of values, where column names are the keys
+        // Create a new map of values, where column names are the keys
 
 
 
     }
+    private void setDate(){
+        SimpleDateFormat mdformat = new SimpleDateFormat("E, MM/dd");
+        String strDate =  mdformat.format(calendar.getTime());
+        date = findViewById(R.id.date);
+        Calendar today = Calendar.getInstance();
+        String stoday= mdformat.format(today.getTime());
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(5,1);
+        String stomorrow = mdformat.format(tomorrow.getTime());
+        Calendar yesterday = Calendar.getInstance();
+        yesterday.add(5,-1);
+        String syesterday = mdformat.format(yesterday.getTime());
+        if(stoday.equals(strDate)){
+            strDate = "Today";
+        } else if(stomorrow.equals(strDate)) {
+            strDate = "Tomorrow";
+        } else if(syesterday.equals(strDate)){
+            strDate = "Yesterday";
+        }
+        date.setText(strDate);
+    }
+
     private void SwipeRight() {
         Toast.makeText(getApplicationContext(), "right", Toast.LENGTH_SHORT).show();
         calendar.add(5,-1);
-        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd");
-        String setDate =  mdformat.format(calendar.getTime());
-        date.setText(setDate);
+        setDate();
+        if(getIsOld()){
+            Button atton = findViewById(R.id.atton);
+            atton.setVisibility(View.GONE);
+        } else {
+            Button atton = findViewById(R.id.atton);
+            atton.setVisibility(View.VISIBLE);
+        }
         refreshTasks();
     }
     private void SwipeLeft()  {
         Toast.makeText(getApplicationContext(), "left", Toast.LENGTH_SHORT).show();
         calendar.add(5,1);
-        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd");
-        String setDate =  mdformat.format(calendar.getTime());
-        date.setText(setDate);
+        setDate();
         refreshTasks();
+        if(getIsOld()){
+            Button atton = findViewById(R.id.atton);
+            atton.setVisibility(View.GONE);
+        } else {
+            Button atton = findViewById(R.id.atton);
+            atton.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -107,22 +129,24 @@ public class MainActivity extends AppCompatActivity {
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-// Define a projection that specifies which columns from the database
-// you will actually use after this query.
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
         String[] projection = {
                 BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT
+                FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_DATE
         };
 
-// Filter results WHERE "title" = 'My Title'
+        // Filter results WHERE "title" = 'My Title'
         String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_DATE + " = ?";
         //String[] selectionArgs = { "My Title" };
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         String strDate =  mdformat.format(calendar.getTime());
         String[] selectionArgs = {strDate};
 
-// How you want the results sorted in the resulting Cursor
-        String sortOrder = FeedReaderContract.FeedEntry._ID + " DESC";
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
 
         Cursor cursor = db.query(
                 FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
@@ -133,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
                 null,                   // don't filter by row groups
                 sortOrder               // The sort order
         );
+        myID = new ArrayList<>();
+        myStatus = new ArrayList<>();
         String contents = new String();
         ArrayList<String> listCon = new ArrayList();
         while(cursor.moveToNext()) {
@@ -140,6 +166,19 @@ public class MainActivity extends AppCompatActivity {
                     cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
             contents = contents + content;
             listCon.add(content);
+            String contentid = cursor.getString(
+                    cursor.getColumnIndexOrThrow(BaseColumns._ID));
+            myID.add(contentid);
+            Integer conten = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
+            if(conten == 1){
+                myStatus.add(true);
+            } else {
+                myStatus.add(false);
+            }
+
+        }
+        while(cursor.moveToNext()) {
 
         }
         final TextView helloTextView = (TextView) findViewById(R.id.taskshow);
@@ -154,32 +193,14 @@ public class MainActivity extends AppCompatActivity {
         return listCon;
 
     }
-    private void Update() {
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//
-//// New value for one column
-//        String title = "MyNewTitle";
-//        ContentValues values = new ContentValues();
-//        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE, title);
-//
-//// Which row to update, based on the title
-//        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE + " LIKE ?";
-//        String[] selectionArgs = { "MyOldTitle" };
-//
-//        int count = db.update(
-//                FeedReaderContract.FeedEntry.TABLE_NAME,
-//                values,
-//                selection,
-//                selectionArgs);
 
-    }
     private void Write(String content) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         String strDate =  mdformat.format(calendar.getTime());
         String date = strDate;
-        String status = "0";
+        Integer status = 0;
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
@@ -197,17 +218,34 @@ public class MainActivity extends AppCompatActivity {
 
     public void addthing(View view) {
         Button atton = findViewById(R.id.atton);
+        int margin = 14;
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + atton.getText().toString());
         if(atton.getText().toString().equals("add thing")){
             et.setVisibility(View.VISIBLE);
             bt.setVisibility(View.VISIBLE);
 
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    .475f
+            );
+            atton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorPrimary));
+            param.setMargins(margin,margin,margin,margin);
+            atton.setLayoutParams(param);
             atton.setText("Done");
             et.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
 
         } else {
+            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1.0f
+            );
+            atton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorAccent));
+            param.setMargins(margin,margin,margin,margin);
+            atton.setLayoutParams(param);
             et.setVisibility(View.GONE);
             bt.setVisibility(View.GONE);
             atton.setText("add thing");
@@ -231,10 +269,19 @@ public class MainActivity extends AppCompatActivity {
         refreshTasks();
 
     }
+    private boolean getIsOld(){
+        Calendar yesterday = Calendar.getInstance();
+        yesterday.add(5,-1);
+        if(calendar.before(yesterday)){
+            return true;
+        }
+        return false;
+    }
     private void refreshTasks(){
         ArrayList<String> myDataset = Read();
+
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-        mAdapter = new MyAdapter(getApplicationContext(),myDataset);
+        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld());
         recyclerView.setAdapter(mAdapter);
     }
     private void setSwipes(){

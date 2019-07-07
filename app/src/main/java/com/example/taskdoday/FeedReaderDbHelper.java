@@ -9,14 +9,14 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + FeedReaderContract.FeedEntry.TABLE_NAME + " (" +
                     FeedReaderContract.FeedEntry._ID + " INTEGER PRIMARY KEY," +
                     FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT + " TEXT," +
-                    FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " TEXT," +
+                    FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " INT," +
                     FeedReaderContract.FeedEntry.COLUMN_NAME_DATE + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + FeedReaderContract.FeedEntry.TABLE_NAME;
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "FeedReader.db";
 
     public FeedReaderDbHelper(Context context) {
