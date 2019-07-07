@@ -22,7 +22,7 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> implements View.OnLongClickListener {
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
     private ArrayList<String> mDataset;
     private ArrayList<Boolean> mStatus;
     private ArrayList<String> mID;
@@ -30,21 +30,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
     private Context mContext;
     private boolean mIsOld;
 
-    @Override
-    public boolean onLongClick(View v) {
-        Context context = mContext;
-        CharSequence text = mDataset.get(mPosition);
-        int duration = Toast.LENGTH_SHORT;
 
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-
-
-
-
-
-        return false;
-    }
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -98,9 +84,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
                     if(mStatus.get(position)){
                         holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp));
                         Update(mID.get(position), 0);
+                        mStatus.set(position,false);
                     } else {
                         holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
                         Update(mID.get(position), 1);
+                        mStatus.set(position,true);
                     }
 
                 }
@@ -121,6 +109,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> impl
     private void Update(String id, Integer status) {
         FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+
 
 // New value for one column
 

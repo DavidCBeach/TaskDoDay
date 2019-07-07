@@ -2,14 +2,18 @@ package com.example.taskdoday;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -27,6 +31,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.taskdoday.R.menu.menu_main;
+
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     private MyAdapter mAdapter;
@@ -37,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private Calendar calendar;
     private ArrayList<Boolean> myStatus;
     private ArrayList<String> myID;
+
+
 
     FeedReaderDbHelper dbHelper;
     @Override
@@ -63,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
         bt = findViewById(R.id.addtask);
         bt.setVisibility(View.GONE);
         calendar = Calendar.getInstance();
+        String smilli = getIntent().getStringExtra("calendar");
+
+
+        if(smilli != null){
+            Long milli = Long.decode(smilli);
+            calendar.setTimeInMillis(milli);
+        }
         setDate();
 
         refreshTasks();
@@ -73,6 +88,36 @@ public class MainActivity extends AppCompatActivity {
         // Create a new map of values, where column names are the keys
 
 
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Add items to action bar
+        getMenuInflater().inflate(menu_main, menu);
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // Is item is selected, if so do correlated action
+        switch(item.getItemId())
+        {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+
+                return true;
+
+            case R.id.calendar_show:
+                Intent intent = new Intent(getBaseContext(), CalendarActivity.class);
+                intent.putExtra("calendar", Long.toString(calendar.getTimeInMillis()));
+                startActivity(intent);
+
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
 
     }
     private void setDate(){
@@ -98,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void SwipeRight() {
-        Toast.makeText(getApplicationContext(), "right", Toast.LENGTH_SHORT).show();
+
         calendar.add(5,-1);
         setDate();
         if(getIsOld()){
@@ -111,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         refreshTasks();
     }
     private void SwipeLeft()  {
-        Toast.makeText(getApplicationContext(), "left", Toast.LENGTH_SHORT).show();
+
         calendar.add(5,1);
         setDate();
         refreshTasks();
@@ -184,12 +229,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView helloTextView = (TextView) findViewById(R.id.taskshow);
         //helloTextView.setText(contents);
         cursor.close();
-        Context context = getApplicationContext();
-        CharSequence text = contents;
-        int duration = Toast.LENGTH_SHORT;
 
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
         return listCon;
 
     }
@@ -207,12 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
-        Context context = getApplicationContext();
-        CharSequence text = Long.toString(newRowId);
-        int duration = Toast.LENGTH_SHORT;
 
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
         Read();
     }
 
@@ -263,11 +298,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void addTask(View view) {
         String taskContent = et.getText().toString();
-        et.setText("");
-        Write(taskContent);
-
-        refreshTasks();
-
+        if(!et.getText().toString().replace(" ","").isEmpty()){
+            et.setText("");
+            Write(taskContent);
+            refreshTasks();
+        }
     }
     private boolean getIsOld(){
         Calendar yesterday = Calendar.getInstance();

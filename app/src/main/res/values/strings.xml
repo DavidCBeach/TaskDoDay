@@ -2,4 +2,6 @@
     <string name="app_name">TaskDoDay</string>
     <string name="button">add thing</string>
     <string name="addtask">Add Task</string>
+    <string name="calendar_show">calendar</string>
+    <string name="go">Go</string>
 </resources>
