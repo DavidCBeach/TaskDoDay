@@ -4,4 +4,11 @@
     <string name="addtask">Add Task</string>
     <string name="calendar_show">calendar</string>
     <string name="go">Go</string>
+    <string name="done">Done</string>
+    <string name="stats_show">stats</string>
+    <string name="options_show">options</string>
+    <string name="create_new">Sort By</string>
+    <string name="open">Settings</string>
+    <string name="notasks">No Tasks</string>
+    <string name="cancel">Cancel</string>
 </resources>

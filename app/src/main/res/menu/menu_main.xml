@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
+<menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:ignore="MissingDefaultResource">
+ >
 
     <item
         android:id="@+id/calendar_show"
@@ -10,6 +10,25 @@
 
         app:showAsAction="always"
         android:title="@string/calendar_show" />
+    <item
+        android:id="@+id/stats_show"
+        android:icon="@drawable/ic_stats"
+
+        app:showAsAction="ifRoom"
+        android:title="@string/stats_show" />
+    <item
+        android:id="@+id/options_show"
+        android:icon="@drawable/ic_menu"
+
+        app:showAsAction="always"
+        android:title="@string/options_show" >
+    <menu>
+        <item android:id="@+id/create_new"
+            android:title="@string/create_new" />
+        <item android:id="@+id/open"
+            android:title="@string/open" />
+    </menu>
+    </item>
 
 
 </menu>
