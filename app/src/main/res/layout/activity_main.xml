@@ -11,6 +11,10 @@
 
 
 
+    <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,37 +25,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/et"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_below="@id/taskshow"
         android:layout_marginBottom="10dp"/>
 
-    <LinearLayout android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+
+        <Button android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:id="@+id/attonu"
+            android:background="@drawable/whitecircle"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="21dp"
+
+            />
+
+    <Button android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:onClick="addthing"
+        android:id="@+id/atton"
+        android:background="@drawable/ic_add_circle50"
         android:layout_alignParentBottom="true"
-        >
-        <Button android:layout_width="0dp"
-            android:layout_weight=".475"
-            android:layout_height="wrap_content"
-            android:text="@string/button"
-            android:onClick="addthing"
-            android:id="@+id/atton"
-            android:background="@color/colorAccent"
-            android:textColor="#FFFFFF"
-            android:layout_margin="5dp"
-            />
-        <Button android:layout_width="0dp"
-            android:layout_weight=".475"
-            android:layout_height="wrap_content"
-            android:text="@string/addtask"
-            android:id="@+id/addtask"
-            android:onClick="addTask"
-            android:background="@color/colorAccent"
-            android:textColor="#FFFFFF"
-            android:layout_margin="5dp"
-            />
+        android:layout_alignParentRight="true"
+        android:layout_margin="15dp"
 
+        />
 
-    </LinearLayout>
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/notasks"
+    android:text="@string/notasks"
+    android:layout_centerInParent="true"
+    android:textColor="#272727"
+    android:textSize="18sp"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/my_recycler_view"
@@ -59,10 +67,61 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/et"
         android:layout_marginTop="-17dp"
-        android:layout_marginBottom="54dp"
         android:scrollbars="vertical" />
+</RelativeLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        >
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="#DFDFDF"
+            android:id="@+id/line"
+            />
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right"
+            android:background="#FFFFFF"
+            >
+
+            <Button android:layout_width="50dp"
+                android:layout_height="30dp"
+
+                android:onClick="done"
+                android:text="@string/done"
+                android:id="@+id/done"
+                android:textColor="@color/colorPrimary"
+                android:background="#FFFFFF"
+                android:layout_margin="5dp"
+
+                style="?android:attr/borderlessButtonStyle"
+                />
+            <Button android:layout_width="80dp"
+
+                android:layout_height="30dp"
+                android:text="@string/addtask"
+                android:id="@+id/addtask"
+                android:onClick="addTask"
+
+                android:background="#FFFFFF"
+                android:textColor="@color/colorAccent"
+                android:layout_margin="5dp"
+                style="?android:attr/borderlessButtonStyle"
+                />
 
 
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/old_view"
+        android:id="@+id/oldfilter"
+        />
 
 
 </RelativeLayout>

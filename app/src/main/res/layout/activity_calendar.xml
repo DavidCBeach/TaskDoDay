@@ -10,15 +10,36 @@
         android:layout_height="wrap_content"
 
         android:layout_marginTop="0dp" />
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/simpleCalendarView"
-        android:text="@string/go"
-        android:background="@color/colorAccent"
-        android:layout_margin="5dp"
-        android:textColor="#FFFFFF"
-        android:onClick="goToDate"
-        />
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="@string/cancel"
+            android:onClick="CancelDate"
+            android:textColor="@color/colorAccent"
+            android:background="#FFFFFF"
+
+
+            style="?android:attr/borderlessButtonStyle"
+            />
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="@string/go"
+            android:onClick="goToDate"
+            android:textColor="@color/colorAccent"
+            android:background="#FFFFFF"
+
+
+            style="?android:attr/borderlessButtonStyle"
+            />
+    </LinearLayout>
+
 
 </RelativeLayout>

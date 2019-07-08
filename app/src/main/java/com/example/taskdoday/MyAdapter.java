@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.provider.BaseColumns;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.RecyclerView;
@@ -75,8 +76,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         holder.textView.setText(mDataset.get(position));
         if(mStatus.get(position)){
             holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
+            holder.textView.setTextColor(Color.parseColor("#DFDFDF"));
+            holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp));
+
         }
         if(!mIsOld){
             holder.checkView.setOnClickListener(new View.OnClickListener(){
@@ -85,10 +89,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                         holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp));
                         Update(mID.get(position), 0);
                         mStatus.set(position,false);
+                        holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
+                        holder.textView.setPaintFlags( holder.textView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+
                     } else {
                         holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
                         Update(mID.get(position), 1);
                         mStatus.set(position,true);
+                        holder.textView.setTextColor(Color.parseColor("#DFDFDF"));
+                        holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     }
 
                 }

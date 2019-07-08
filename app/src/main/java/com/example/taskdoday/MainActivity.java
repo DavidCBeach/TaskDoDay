@@ -7,28 +7,34 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import static com.example.taskdoday.R.menu.menu_main;
@@ -39,11 +45,15 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private EditText et;
     private Button bt;
+    private Button done;
     private TextView date;
     private Calendar calendar;
     private ArrayList<Boolean> myStatus;
     private ArrayList<String> myID;
-
+    private CalendarDialog calendarDialog;
+    private FragmentManager fm = getSupportFragmentManager();
+    CalendarView cv ;
+    private GregorianCalendar Gcalendar;
 
 
     FeedReaderDbHelper dbHelper;
@@ -68,16 +78,15 @@ public class MainActivity extends AppCompatActivity {
 
         et = findViewById(R.id.et);
         et.setVisibility(View.GONE);
+        done = findViewById(R.id.done);
+        done.setVisibility(View.GONE);
         bt = findViewById(R.id.addtask);
         bt.setVisibility(View.GONE);
         calendar = Calendar.getInstance();
-        String smilli = getIntent().getStringExtra("calendar");
+        calendarDialog = new CalendarDialog();
+        View old = findViewById(R.id.oldfilter);
+        old.setVisibility(View.GONE);
 
-
-        if(smilli != null){
-            Long milli = Long.decode(smilli);
-            calendar.setTimeInMillis(milli);
-        }
         setDate();
 
         refreshTasks();
@@ -90,11 +99,44 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+    public void goToDate(View view) {
+        if(bt.getVisibility()==View.VISIBLE){
+            done(view);
+        }
+        calendar.setTimeInMillis(calendarDialog.getGcalendar().getTimeInMillis());
+        System.out.println(calendar.getTime());
+
+        setDate();
+        if(getIsOld()){
+            setIsOld();
+        } else {
+            setIsNotOld();
+        }
+
+
+        refreshTasks();
+
+
+
+        calendarDialog.dismisser();
+    }
+    public void CancelDate(View view) {
+        calendarDialog.dismisser();
+    }
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         // Add items to action bar
+
+
         getMenuInflater().inflate(menu_main, menu);
+
+
 
         return true;
     }
@@ -110,20 +152,47 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.calendar_show:
-                Intent intent = new Intent(getBaseContext(), CalendarActivity.class);
-                intent.putExtra("calendar", Long.toString(calendar.getTimeInMillis()));
-                startActivity(intent);
+//                Intent intent = new Intent(getBaseContext(), CalendarActivity.class);
+//                intent.putExtra("calendar", Long.toString(calendar.getTimeInMillis()));
+//                startActivity(intent);
+                calendarDialog.setArguements(calendar);
+                calendarDialog.show(fm, "photo");
+
 
                 return true;
+
+            case R.id.stats_show:
+                startActivity(new Intent(this, StatsActivity.class));
+
+
+                return true;
+            case R.id.create_new:
+                Context context = getApplicationContext();
+                CharSequence text = "Sort";
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+
+
+
+                return true;
+            case R.id.open:
+                startActivity(new Intent(this, SettingsActivity.class));
+
+
+                return true;
+
+
 
         }
         return super.onOptionsItemSelected(item);
 
     }
+
     private void setDate(){
         SimpleDateFormat mdformat = new SimpleDateFormat("E, MM/dd");
         String strDate =  mdformat.format(calendar.getTime());
-        date = findViewById(R.id.date);
         Calendar today = Calendar.getInstance();
         String stoday= mdformat.format(today.getTime());
         Calendar tomorrow = Calendar.getInstance();
@@ -139,34 +208,51 @@ public class MainActivity extends AppCompatActivity {
         } else if(syesterday.equals(strDate)){
             strDate = "Yesterday";
         }
-        date.setText(strDate);
+        setTitle(strDate);
     }
 
     private void SwipeRight() {
-
+        if(bt.getVisibility()==View.GONE){
         calendar.add(5,-1);
         setDate();
         if(getIsOld()){
-            Button atton = findViewById(R.id.atton);
-            atton.setVisibility(View.GONE);
+            setIsOld();
         } else {
-            Button atton = findViewById(R.id.atton);
-            atton.setVisibility(View.VISIBLE);
+            setIsNotOld();
         }
         refreshTasks();
+        }
+    }
+    private void setIsOld(){
+        Button atton = findViewById(R.id.atton);
+        atton.setVisibility(View.GONE);
+        Button attonu = findViewById(R.id.attonu);
+        attonu.setVisibility(View.GONE);
+        View old = findViewById(R.id.oldfilter);
+        old.setVisibility(View.VISIBLE);
+    }
+    private void setIsNotOld(){
+        Button atton = findViewById(R.id.atton);
+        atton.setVisibility(View.VISIBLE);
+        Button attonu = findViewById(R.id.attonu);
+        attonu.setVisibility(View.VISIBLE);
+        View old = findViewById(R.id.oldfilter);
+        old.setVisibility(View.GONE);
     }
     private void SwipeLeft()  {
 
-        calendar.add(5,1);
-        setDate();
-        refreshTasks();
-        if(getIsOld()){
-            Button atton = findViewById(R.id.atton);
-            atton.setVisibility(View.GONE);
-        } else {
-            Button atton = findViewById(R.id.atton);
-            atton.setVisibility(View.VISIBLE);
+        if(bt.getVisibility()==View.GONE){
+            calendar.add(5,1);
+            setDate();
+            refreshTasks();
+            if(getIsOld()){
+                setIsOld();
+            } else {
+                setIsNotOld();
+
+            }
         }
+
 
     }
 
@@ -253,45 +339,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void addthing(View view) {
         Button atton = findViewById(R.id.atton);
-        int margin = 14;
-        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + atton.getText().toString());
-        if(atton.getText().toString().equals("add thing")){
-            et.setVisibility(View.VISIBLE);
-            bt.setVisibility(View.VISIBLE);
+        atton.setVisibility(View.GONE);
+        Button attonu = findViewById(R.id.attonu);
+        attonu.setVisibility(View.GONE);
+        et.setVisibility(View.VISIBLE);
+        bt.setVisibility(View.VISIBLE);
+        done.setVisibility(View.VISIBLE);
 
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    .475f
-            );
-            atton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorPrimary));
-            param.setMargins(margin,margin,margin,margin);
-            atton.setLayoutParams(param);
-            atton.setText("Done");
-            et.requestFocus();
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
-
-        } else {
-            LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    1.0f
-            );
-            atton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorAccent));
-            param.setMargins(margin,margin,margin,margin);
-            atton.setLayoutParams(param);
-            et.setVisibility(View.GONE);
-            bt.setVisibility(View.GONE);
-            atton.setText("add thing");
+        et.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
 
 
-            InputMethodManager inputManager = (InputMethodManager)
-                    getSystemService(Context.INPUT_METHOD_SERVICE);
-
-            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                    InputMethodManager.HIDE_NOT_ALWAYS);
-        }
 
 
     }
@@ -314,7 +373,13 @@ public class MainActivity extends AppCompatActivity {
     }
     private void refreshTasks(){
         ArrayList<String> myDataset = Read();
-
+        if(!myDataset.isEmpty()){
+            TextView notask = findViewById(R.id.notasks);
+            notask.setVisibility(View.GONE);
+        } else {
+            TextView notask = findViewById(R.id.notasks);
+            notask.setVisibility(View.VISIBLE);
+        }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
         mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld());
         recyclerView.setAdapter(mAdapter);
@@ -342,4 +407,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void done(View view) {
+        et.setVisibility(View.GONE);
+        bt.setVisibility(View.GONE);
+        done.setVisibility(View.GONE);
+
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+        Button atton = findViewById(R.id.atton);
+        atton.setVisibility(View.VISIBLE);
+        Button attonu = findViewById(R.id.attonu);
+        attonu.setVisibility(View.VISIBLE);
+    }
 }
