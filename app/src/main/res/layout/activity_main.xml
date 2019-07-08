@@ -8,30 +8,14 @@
     tools:context=".MainActivity"
     android:orientation="vertical"
     android:id="@+id/base">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary2"
-        android:padding="10dp"
-        android:id="@+id/datezone">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/date"
-            android:textSize="20sp"
-            android:textColor="#ffffff"
-            android:layout_centerInParent="true"
-            android:layout_centerHorizontal="true"
-            android:textAlignment="center"
-            />
-    </RelativeLayout>
+
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/taskshow"
-        android:layout_below="@id/datezone"
+
         />
     <EditText
         android:layout_width="match_parent"
@@ -74,7 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/et"
-        android:layout_marginTop="-20dp"
+        android:layout_marginTop="-17dp"
         android:layout_marginBottom="54dp"
         android:scrollbars="vertical" />
 
