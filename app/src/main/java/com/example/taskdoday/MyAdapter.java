@@ -30,6 +30,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
     private int mPosition;
     private Context mContext;
     private boolean mIsOld;
+    private boolean mDeleteMode;
+    private ArrayList<String> deletables;
 
 
 
@@ -41,21 +43,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         public TextView textView;
         public RelativeLayout parentView;
         public ImageView checkView;
+        public ImageView deletecheckView;
         public MyViewHolder(View v) {
             super(v);
             textView = v.findViewById(R.id.content);
             parentView = v.findViewById(R.id.taskLayout);
             checkView = v.findViewById(R.id.check);
+            deletecheckView = v.findViewById(R.id.deletecheck);
+
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Context context, ArrayList<String> myDataset, ArrayList<Boolean> myStatus, ArrayList<String> myID,boolean isOld) {
+    public MyAdapter(Context context, ArrayList<String> myDataset, ArrayList<Boolean> myStatus, ArrayList<String> myID,boolean isOld, boolean deleteMode) {
         mDataset = myDataset;
         mStatus = myStatus;
         mID = myID;
         mContext = context;
         mIsOld = isOld;
+        mDeleteMode = deleteMode;
+        deletables = new ArrayList<>();
+
     }
 
     // Create new views (invoked by the layout manager)
@@ -74,6 +82,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         mPosition = position;
         Log.d(TAG, "taco");
         holder.textView.setText(mDataset.get(position));
+        if(!mDeleteMode){
+            holder.deletecheckView.setVisibility(View.GONE);
+        }
+
         if(mStatus.get(position)){
             holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
             holder.textView.setTextColor(Color.parseColor("#DFDFDF"));
@@ -99,6 +111,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                         holder.textView.setTextColor(Color.parseColor("#DFDFDF"));
                         holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     }
+                }
+            });
+            holder.deletecheckView.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View view){
+                    if(deletables.isEmpty()){
+                        holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_grey));
+                        deletables.add(mID.get(position));
+                        holder.textView.setTextColor(Color.parseColor("#ff0000"));
+                    } else if(!deletables.contains(mID.get(position))){
+                        holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_grey));
+                        deletables.add(mID.get(position));
+                        holder.textView.setTextColor(Color.parseColor("#ff0000"));
+
+                    } else {
+                        holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_grey));
+                        deletables.remove(deletables.indexOf(mID.get(position)));
+                        holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
+                    }
+                    System.out.println(deletables);
 
                 }
             });
@@ -106,7 +137,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
 
 
     }
-
+    public ArrayList<String> getDeletables(){
+        return deletables;
+    }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override

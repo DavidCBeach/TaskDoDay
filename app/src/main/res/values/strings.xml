@@ -11,4 +11,13 @@
     <string name="open">Settings</string>
     <string name="notasks">No Tasks</string>
     <string name="cancel">Cancel</string>
+    <string name="incomplete">Only Incomplete</string>
+    <string name="delete">Delete Tasks</string>
+    <string name="completed">Only Completed</string>
+    <string name="scomplete">Completed</string>
+    <string name="stime">Time</string>
+    <string name="sname">Name</string>
+    <string name="nostats">No Statistics Yet</string>
+    <string name="taskcompletionrate">Overall Task Competition Rate</string>
+    <string name="deletet">delete</string>
 </resources>

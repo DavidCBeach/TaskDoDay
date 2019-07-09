@@ -19,7 +19,7 @@ android:layout_height="wrap_content"
    />
 <TextView
     android:layout_width="wrap_content"
-    android:layout_height="26dp"
+    android:layout_height="wrap_content"
     android:id="@+id/content"
     android:textSize="20sp"
     android:layout_margin="10dp"
@@ -27,12 +27,23 @@ android:layout_height="wrap_content"
     android:textColor="#5A5A5A"
 
     />
+    <ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/deletecheck"
+    android:background="@drawable/ic_check_box_outline_blank_grey"
+    android:layout_alignParentRight="true"
+    android:layout_marginLeft="20dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp"
+    />
     <View
         android:layout_width="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_height="1dp"
         android:background="#DFDFDF"
-        android:layout_below="@id/check"/>
+        android:layout_below="@id/content"/>
 
 </RelativeLayout>

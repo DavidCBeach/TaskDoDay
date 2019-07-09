@@ -51,9 +51,11 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Boolean> myStatus;
     private ArrayList<String> myID;
     private CalendarDialog calendarDialog;
+    private SortDialog sortDialog;
     private FragmentManager fm = getSupportFragmentManager();
     CalendarView cv ;
     private GregorianCalendar Gcalendar;
+    private String sortOrder;
 
 
     FeedReaderDbHelper dbHelper;
@@ -84,8 +86,13 @@ public class MainActivity extends AppCompatActivity {
         bt.setVisibility(View.GONE);
         calendar = Calendar.getInstance();
         calendarDialog = new CalendarDialog();
+        sortDialog = new SortDialog();
         View old = findViewById(R.id.oldfilter);
         old.setVisibility(View.GONE);
+        sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
+        LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
+        deleteinterface.setVisibility(View.GONE);
+
 
         setDate();
 
@@ -122,7 +129,25 @@ public class MainActivity extends AppCompatActivity {
 
         calendarDialog.dismisser();
     }
+
+    public void setSortCompleted(View view){
+        sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
+        refreshTasks();
+        sortDialog.dismisser();
+    }
+    public void setSortTime(View view){
+        sortOrder = FeedReaderContract.FeedEntry._ID + " DESC";
+        refreshTasks();
+        sortDialog.dismisser();
+    }
+    public void setSortName(View view){
+        sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT + " ASC";
+        refreshTasks();
+        sortDialog.dismisser();
+    }
+
     public void CancelDate(View view) {
+
         calendarDialog.dismisser();
     }
 
@@ -148,49 +173,76 @@ public class MainActivity extends AppCompatActivity {
         {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-
                 return true;
-
             case R.id.calendar_show:
-//                Intent intent = new Intent(getBaseContext(), CalendarActivity.class);
-//                intent.putExtra("calendar", Long.toString(calendar.getTimeInMillis()));
-//                startActivity(intent);
                 calendarDialog.setArguements(calendar);
                 calendarDialog.show(fm, "photo");
-
-
                 return true;
-
             case R.id.stats_show:
                 startActivity(new Intent(this, StatsActivity.class));
-
-
                 return true;
-            case R.id.create_new:
-                Context context = getApplicationContext();
-                CharSequence text = "Sort";
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-
-
-
+            case R.id.sort:
+                sortDialog.show(fm, "sort");
                 return true;
-            case R.id.open:
+            case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
-
-
                 return true;
-
-
+            case R.id.delete:
+                if(!getIsOld()) {
+                    ArrayList<String> myDataset = Read();
+                    if (!myDataset.isEmpty()) {
+                        TextView notask = findViewById(R.id.notasks);
+                        notask.setVisibility(View.GONE);
+                    } else {
+                        TextView notask = findViewById(R.id.notasks);
+                        notask.setVisibility(View.VISIBLE);
+                    }
+                    System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
+                    mAdapter = new MyAdapter(getApplicationContext(), myDataset, myStatus, myID, getIsOld(), true);
+                    recyclerView.setAdapter(mAdapter);
+                    LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
+                    deleteinterface.setVisibility(View.VISIBLE);
+                    Button atton = findViewById(R.id.atton);
+                    atton.setVisibility(View.GONE);
+                    Button attonu = findViewById(R.id.attonu);
+                    attonu.setVisibility(View.GONE);
+                }
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
-
+    }
+    public void cancelDelete(View view){
+        LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
+        deleteinterface.setVisibility(View.GONE);
+        Button atton = findViewById(R.id.atton);
+        atton.setVisibility(View.VISIBLE);
+        Button attonu = findViewById(R.id.attonu);
+        attonu.setVisibility(View.VISIBLE);
+        refreshTasks();
+    }
+    public void delete(View view){
+        LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
+        deleteinterface.setVisibility(View.GONE);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ArrayList<String> deletables = mAdapter.getDeletables();
+        String deleteList = new String();
+        for(int i = 0; i < deletables.size(); i++){
+            deleteList = deleteList + deletables.get(i) + ",";
+        }
+        System.out.println("ZZZZZZZZZZZZZZ" + deletables);
+        System.out.println("ZZZZZZZZZZZZZZ" + deleteList.substring(0,deleteList.length()-1));
+        db.execSQL("delete from "+FeedReaderContract.FeedEntry.TABLE_NAME+" where "+FeedReaderContract.FeedEntry._ID+" in ("+deleteList.substring(0,deleteList.length()-1)+")");
+        db.close();
+        Button atton = findViewById(R.id.atton);
+        atton.setVisibility(View.VISIBLE);
+        Button attonu = findViewById(R.id.attonu);
+        attonu.setVisibility(View.VISIBLE);
+        refreshTasks();
     }
 
     private void setDate(){
+
         SimpleDateFormat mdformat = new SimpleDateFormat("E, MM/dd");
         String strDate =  mdformat.format(calendar.getTime());
         Calendar today = Calendar.getInstance();
@@ -249,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
                 setIsOld();
             } else {
                 setIsNotOld();
-
             }
         }
 
@@ -277,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
         String[] selectionArgs = {strDate};
 
         // How you want the results sorted in the resulting Cursor
-        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
+
 
         Cursor cursor = db.query(
                 FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
@@ -315,6 +366,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView helloTextView = (TextView) findViewById(R.id.taskshow);
         //helloTextView.setText(contents);
         cursor.close();
+        db.close();
 
         return listCon;
 
@@ -324,16 +376,22 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
+        //the below 3 lines is for backlogging 1 week of task for testing purposes
+//        calendar.add(5,-7);
+//        String strDate =  mdformat.format(calendar.getTime());
+//        calendar.add(5,7);
+
         String strDate =  mdformat.format(calendar.getTime());
         String date = strDate;
         Integer status = 0;
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, calendar.getTimeInMillis() );
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
-
+        db.close();
         Read();
     }
 
@@ -381,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
             notask.setVisibility(View.VISIBLE);
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld());
+        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld(),false);
         recyclerView.setAdapter(mAdapter);
     }
     private void setSwipes(){
