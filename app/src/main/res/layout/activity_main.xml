@@ -40,34 +40,52 @@
             android:layout_margin="21dp"
 
             />
+            <Button android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:onClick="addthing"
+                android:id="@+id/atton"
+                android:background="@drawable/ic_add_circle50"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_margin="15dp"
 
-    <Button android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:onClick="addthing"
-        android:id="@+id/atton"
-        android:background="@drawable/ic_add_circle50"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="15dp"
+                />
 
-        />
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/notasks"
-    android:text="@string/notasks"
-    android:layout_centerInParent="true"
-    android:textColor="#5A5A5A"
-    android:textSize="18sp"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:id="@+id/transitions_container"
+    android:layout_below="@+id/et"
+    android:layout_marginTop="-17dp"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/notaskslayout"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/notasks"
+            android:text="@string/notasks"
+            android:layout_centerInParent="true"
+            android:textColor="#5A5A5A"
+            android:textSize="18sp"/>
+
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/et"
-        android:layout_marginTop="-17dp"
+
         android:scrollbars="vertical" />
+</LinearLayout>
+
 </RelativeLayout>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -142,7 +160,7 @@
                 android:onClick="cancelDelete"
                 android:text="@string/cancel"
                 android:id="@+id/cancel"
-                android:textColor="@color/colorPrimary"
+                android:textColor="#888888"
                 android:background="#FFFFFF"
                 android:layout_margin="5dp"
 
@@ -156,7 +174,7 @@
                 android:onClick="delete"
 
                 android:background="#FFFFFF"
-                android:textColor="@color/colorAccent"
+                android:textColor="#ff0000"
                 android:layout_margin="5dp"
                 style="?android:attr/borderlessButtonStyle"
                 />
