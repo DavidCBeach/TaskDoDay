@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/photoinfo"
+    android:layout_width="300dp" android:layout_height="420dp"
+    android:layout_gravity="center"
+    android:padding="10dp"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_new"
+        android:textSize="18sp"
+        android:layout_margin="10dp"
+        android:textColor="#5A5A5A"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sort_by_completed"
+        android:onClick="setSortCompleted"
+        android:text="@string/scomplete"
+
+        android:layout_margin="10dp"
+        android:textColor="@color/colorPrimary"
+        android:background="#FFFFFF"
+        style="?android:attr/borderlessButtonStyle"
+
+        />
+    <View
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_height="1dp"
+        android:background="#DFDFDF" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sort_by_time"
+        android:onClick="setSortTime"
+        android:text="@string/stime"
+
+        android:layout_margin="10dp"
+        android:textColor="@color/colorPrimary"
+        android:background="#FFFFFF"
+        style="?android:attr/borderlessButtonStyle"
+
+        />
+    <View
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_height="1dp"
+        android:background="#DFDFDF" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sort_by_name"
+        android:onClick="setSortName"
+        android:text="@string/sname"
+
+        android:layout_margin="10dp"
+        android:textColor="@color/colorPrimary"
+        android:background="#FFFFFF"
+        style="?android:attr/borderlessButtonStyle"
+
+        />
+
+</LinearLayout>
