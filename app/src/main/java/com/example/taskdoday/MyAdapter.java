@@ -118,15 +118,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                     if(deletables.isEmpty()){
                         holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_grey));
                         deletables.add(mID.get(position));
-                        holder.textView.setTextColor(Color.parseColor("#ff0000"));
+                        holder.parentView.setBackgroundColor(Color.parseColor("#ff0000"));
+                        holder.textView.setTextColor(Color.parseColor("#ffffff"));
                     } else if(!deletables.contains(mID.get(position))){
                         holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_grey));
                         deletables.add(mID.get(position));
-                        holder.textView.setTextColor(Color.parseColor("#ff0000"));
+                        holder.parentView.setBackgroundColor(Color.parseColor("#ff0000"));
+                        holder.textView.setTextColor(Color.parseColor("#ffffff"));
 
                     } else {
                         holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_grey));
                         deletables.remove(deletables.indexOf(mID.get(position)));
+                        holder.parentView.setBackgroundColor(Color.parseColor("#ffffff"));
                         holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
                     }
                     System.out.println(deletables);

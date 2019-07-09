@@ -14,11 +14,14 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import android.transition.TransitionManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CalendarView;
@@ -109,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void goToDate(View view) {
-        if(bt.getVisibility()==View.VISIBLE){
+        if(bt.getVisibility()==View.VISIBLE  || findViewById(R.id.deleteinterface).getVisibility() == View.VISIBLE){
+            findViewById(R.id.deleteinterface).setVisibility(View.GONE);
             done(view);
         }
         calendar.setTimeInMillis(calendarDialog.getGcalendar().getTimeInMillis());
@@ -193,9 +197,13 @@ public class MainActivity extends AppCompatActivity {
                     if (!myDataset.isEmpty()) {
                         TextView notask = findViewById(R.id.notasks);
                         notask.setVisibility(View.GONE);
+                        RelativeLayout notaskl = findViewById(R.id.notaskslayout);
+                        notaskl.setVisibility(View.GONE);
                     } else {
                         TextView notask = findViewById(R.id.notasks);
                         notask.setVisibility(View.VISIBLE);
+                        RelativeLayout notaskl = findViewById(R.id.notaskslayout);
+                        notaskl.setVisibility(View.VISIBLE);
                     }
                     System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
                     mAdapter = new MyAdapter(getApplicationContext(), myDataset, myStatus, myID, getIsOld(), true);
@@ -264,7 +272,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void SwipeRight() {
-        if(bt.getVisibility()==View.GONE){
+        if(bt.getVisibility()==View.GONE && findViewById(R.id.deleteinterface).getVisibility() == View.GONE){
+
+            SlideAnimationUtil.slideInFromLeft(getApplicationContext(), findViewById(R.id.transitions_container));
         calendar.add(5,-1);
         setDate();
         if(getIsOld()){
@@ -293,7 +303,9 @@ public class MainActivity extends AppCompatActivity {
     }
     private void SwipeLeft()  {
 
-        if(bt.getVisibility()==View.GONE){
+        if(bt.getVisibility()==View.GONE && findViewById(R.id.deleteinterface).getVisibility() == View.GONE){
+            SlideAnimationUtil.slideInFromRight(getApplicationContext(), findViewById(R.id.transitions_container));
+
             calendar.add(5,1);
             setDate();
             refreshTasks();
@@ -434,9 +446,13 @@ public class MainActivity extends AppCompatActivity {
         if(!myDataset.isEmpty()){
             TextView notask = findViewById(R.id.notasks);
             notask.setVisibility(View.GONE);
+            RelativeLayout notaskl = findViewById(R.id.notaskslayout);
+            notaskl.setVisibility(View.GONE);
         } else {
             TextView notask = findViewById(R.id.notasks);
             notask.setVisibility(View.VISIBLE);
+            RelativeLayout notaskl = findViewById(R.id.notaskslayout);
+            notaskl.setVisibility(View.VISIBLE);
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
         mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld(),false);
@@ -475,6 +491,8 @@ public class MainActivity extends AppCompatActivity {
 
         inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
+//        final ViewGroup transitionsContainer = (ViewGroup) view.findViewById(R.id.transitions_container2);
+//        TransitionManager.beginDelayedTransition(transitionsContainer);
         Button atton = findViewById(R.id.atton);
         atton.setVisibility(View.VISIBLE);
         Button attonu = findViewById(R.id.attonu);
