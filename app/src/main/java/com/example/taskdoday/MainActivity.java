@@ -400,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, calendar.getTimeInMillis() );
+        System.out.println(calendar.getTimeInMillis());
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
