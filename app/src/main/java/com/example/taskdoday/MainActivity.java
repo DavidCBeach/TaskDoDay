@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     CalendarView cv ;
     private GregorianCalendar Gcalendar;
     private String sortOrder;
+    private int lastOld;
 
 
     FeedReaderDbHelper dbHelper;
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
         LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
         deleteinterface.setVisibility(View.GONE);
+        lastOld = 0;
 
 
         setDate();
@@ -122,8 +124,10 @@ public class MainActivity extends AppCompatActivity {
         setDate();
         if(getIsOld()){
             setIsOld();
+            lastOld = 1;
         } else {
             setIsNotOld();
+            lastOld = 0;
         }
 
 
@@ -193,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.delete:
                 if(!getIsOld()) {
+                    SlideAnimationUtil.slideInFromBottom(getApplicationContext(), findViewById(R.id.atton));
+                    SlideAnimationUtil.slideInFromBottom(getApplicationContext(), findViewById(R.id.attonu));
                     ArrayList<String> myDataset = Read();
                     if (!myDataset.isEmpty()) {
                         TextView notask = findViewById(R.id.notasks);
@@ -221,8 +227,11 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     public void cancelDelete(View view){
+
         LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
         deleteinterface.setVisibility(View.GONE);
+        SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.atton));
+        SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.attonu));
         Button atton = findViewById(R.id.atton);
         atton.setVisibility(View.VISIBLE);
         Button attonu = findViewById(R.id.attonu);
@@ -242,6 +251,8 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("ZZZZZZZZZZZZZZ" + deleteList.substring(0,deleteList.length()-1));
         db.execSQL("delete from "+FeedReaderContract.FeedEntry.TABLE_NAME+" where "+FeedReaderContract.FeedEntry._ID+" in ("+deleteList.substring(0,deleteList.length()-1)+")");
         db.close();
+        SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.atton));
+        SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.attonu));
         Button atton = findViewById(R.id.atton);
         atton.setVisibility(View.VISIBLE);
         Button attonu = findViewById(R.id.attonu);
@@ -279,27 +290,40 @@ public class MainActivity extends AppCompatActivity {
         setDate();
         if(getIsOld()){
             setIsOld();
+            lastOld = 1;
         } else {
             setIsNotOld();
+            lastOld = 0;
         }
         refreshTasks();
         }
     }
     private void setIsOld(){
+        if(lastOld == 0){
+            SlideAnimationUtil.slideInFromBottom(getApplicationContext(), findViewById(R.id.atton));
+        }
+
         Button atton = findViewById(R.id.atton);
         atton.setVisibility(View.GONE);
         Button attonu = findViewById(R.id.attonu);
         attonu.setVisibility(View.GONE);
         View old = findViewById(R.id.oldfilter);
         old.setVisibility(View.VISIBLE);
+
     }
     private void setIsNotOld(){
+        if(lastOld == 1){
+            SlideAnimationUtil.slideInFromTop(getApplicationContext(), findViewById(R.id.atton));
+            SlideAnimationUtil.slideInFromTop(getApplicationContext(), findViewById(R.id.attonu));
+        }
         Button atton = findViewById(R.id.atton);
         atton.setVisibility(View.VISIBLE);
         Button attonu = findViewById(R.id.attonu);
         attonu.setVisibility(View.VISIBLE);
+
         View old = findViewById(R.id.oldfilter);
         old.setVisibility(View.GONE);
+
     }
     private void SwipeLeft()  {
 
@@ -311,8 +335,10 @@ public class MainActivity extends AppCompatActivity {
             refreshTasks();
             if(getIsOld()){
                 setIsOld();
+                lastOld = 1;
             } else {
                 setIsNotOld();
+                lastOld = 0;
             }
         }
 
@@ -492,8 +518,9 @@ public class MainActivity extends AppCompatActivity {
 
         inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
-//        final ViewGroup transitionsContainer = (ViewGroup) view.findViewById(R.id.transitions_container2);
-//        TransitionManager.beginDelayedTransition(transitionsContainer);
+
+        SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.atton));
+        SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.attonu));
         Button atton = findViewById(R.id.atton);
         atton.setVisibility(View.VISIBLE);
         Button attonu = findViewById(R.id.attonu);
