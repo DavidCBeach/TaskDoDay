@@ -34,16 +34,17 @@ public class StatsActivity extends AppCompatActivity {
         SimpleDateFormat mdformat = new SimpleDateFormat("MM");
         String month =  mdformat.format(calendar.getTime());
         int imonth = Integer.parseInt(month);
+        System.out.println(imonth);
         SimpleDateFormat dmdformat = new SimpleDateFormat("dd");
         String day =  dmdformat.format(calendar.getTime());
         int iday = Integer.parseInt(day);
         SimpleDateFormat ymdformat = new SimpleDateFormat("yyyy");
         String year =  ymdformat.format(calendar.getTime());
         int iyear= Integer.parseInt(year);
-
-        calendar.set(iyear,imonth,iday,0,0);
-
-
+        System.out.println(calendar.getTime());
+        calendar.set(iyear,imonth-1,iday,0,0);
+        System.out.println(calendar.getTime());
+        System.out.println(calendar.getTimeInMillis());
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -56,7 +57,7 @@ public class StatsActivity extends AppCompatActivity {
         };
         String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
         // Filter results WHERE "title" = 'My Title'
-        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_DATE + " < ?";
+        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI + " < ?";
         //String[] selectionArgs = { "My Title" };
         String[] selectionArgs = {Long.toString(calendar.getTimeInMillis())};
 

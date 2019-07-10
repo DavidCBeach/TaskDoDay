@@ -20,4 +20,8 @@
     <string name="nostats">No Statistics Yet</string>
     <string name="taskcompletionrate">Overall Task Competition Rate</string>
     <string name="deletet">delete</string>
+    <string name="theme">Theme</string>
+    <string name="about">About</string>
+    <string name="rollover">Task Rollover</string>
+    <string name="notifications">Notifications</string>
 </resources>
