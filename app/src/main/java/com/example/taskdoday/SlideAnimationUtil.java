@@ -15,6 +15,15 @@ public class SlideAnimationUtil {
     public static void slideInFromLeft(Context context, View view) {
         runSimpleAnimation(context, view, R.anim.slide_from_left);
     }
+    public static void slideInFromBottom(Context context, View view) {
+        runSimpleAnimation(context, view, R.anim.slide_to_top);
+    }
+    public static void slideInFromTop(Context context, View view) {
+        runSimpleAnimation(context, view, R.anim.slide_from_top);
+    }
+    public static void slideInFromTopSlow(Context context, View view) {
+        runSimpleAnimation(context, view, R.anim.slide_from_top_slow);
+    }
 
     /**
      * Animates a view so that it slides from its current position, out of view to the left.
