@@ -24,4 +24,19 @@
     <string name="about">About</string>
     <string name="rollover">Task Rollover</string>
     <string name="notifications">Notifications</string>
+    <string name="theme1">Watermelon</string>
+    <string name="theme2">Light</string>
+    <string name="theme3">Dark</string>
+    <string name="daily">Daily Reminder</string>
+    <string name="dailyreminder">Set a notification to go off at a specified time to remind you of your incompleted tasks</string>
+    <string name="rolloverexplanation">Set up a time of day for the days incomplete tasks to rollover to the next day. WARNING: When tasks rollover they are counted as incomplete for that day in your statistics</string>
+    <string name="rollovertimetext">Rollover Time:</string>
+    <string name="ampm">PM</string>
+    <string name="number2">59</string>
+    <string name="number1">11</string>
+    <string name="remindertime">Reminder Time:</string>
+    <string name="renumber1">5</string>
+    <string name="renumber2">00</string>
+    <string name="reampm">PM</string>
+    <string name="version">Version: 0.0.1</string>
 </resources>

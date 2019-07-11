@@ -4,6 +4,11 @@
     <color name="colorPrimary2">#008570</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="colorDarkPrimary">#313131</color>
+    <color name="colorDarkAccent">#FFC800</color>
+    <color name="colorLightPrimary">#F5E2E2</color>
+    <color name="colorLightAccent">#FF9696</color>
+    <color name="grey">#ACACAC</color>
     <!--<color name="colorPrimary">#008577</color>-->
     <!--<color name="colorPrimary2">#008570</color>-->
     <!--<color name="colorPrimaryDark">#00574B</color>-->

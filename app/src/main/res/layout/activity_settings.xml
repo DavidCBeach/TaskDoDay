@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity"
     android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="30dp">
+
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,79 +51,93 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/check1"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp"
-            android:background="@drawable/ic_check_box_outline_blank_grey"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="7dp"
-            />
-        <TextView
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/theme1"
-            android:text="@string/theme"
-            android:layout_toRightOf="@id/check1"
-            android:layout_margin="10dp"
-            android:textColor="#5A5A5A"
-
+            android:text="@string/theme1"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentLeft="true"
+            android:checked="true"
+            android:textColor="#3C3C3C"
             />
+
+
+
+        <View
+            android:layout_margin="10dp"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:id="@+id/colorPrimary"
+            android:background="@color/colorPrimary"/>
+        <View
+            android:layout_margin="10dp"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:layout_toLeftOf="@id/colorPrimary"
+            android:background="@color/colorAccent"/>
 
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/check2"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp"
-            android:background="@drawable/ic_check_box_outline_blank_grey"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="7dp"
-            />
-        <TextView
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/theme2"
-            android:text="@string/theme"
-            android:layout_toRightOf="@id/check2"
-            android:layout_margin="10dp"
-            android:textColor="#5A5A5A"
+            android:text="@string/theme2"
+            android:layout_marginLeft="5dp"
 
+            android:layout_alignParentLeft="true"
+
+            android:textColor="#3C3C3C"
             />
+
+
+        <View
+            android:layout_margin="10dp"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:id="@+id/colorLightPrimary"
+            android:background="@color/colorLightPrimary"/>
+        <View
+            android:layout_margin="10dp"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:layout_toLeftOf="@id/colorLightPrimary"
+            android:background="@color/colorLightAccent"/>
 
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/check3"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="0dp"
-            android:background="@drawable/ic_check_box_outline_blank_grey"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="7dp"
-            />
-        <TextView
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/theme3"
-            android:text="@string/theme"
-            android:layout_toRightOf="@id/check3"
-            android:layout_margin="10dp"
-            android:textColor="#5A5A5A"
+            android:text="@string/theme3"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentLeft="true"
 
+            android:textColor="#3C3C3C"
             />
+
+
+    <View
+        android:layout_margin="10dp"
+        android:layout_width="40dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:id="@+id/colorDarkPrimary"
+        android:background="@color/colorDarkPrimary"/>
+        <View
+            android:layout_margin="10dp"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:layout_toLeftOf="@id/colorDarkPrimary"
+            android:background="@color/colorDarkAccent"/>
 
     </RelativeLayout>
 
@@ -149,6 +175,84 @@
         />
 
     </RelativeLayout>
+    <Switch
+        android:id="@+id/daily"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/daily"
+        android:textColor="#3C3C3C"
+        android:checked="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="20dp"
+        android:gravity="left">
+
+    </Switch>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#B3B3B3"
+        android:layout_marginRight="70dp"
+        android:layout_marginLeft="20dp"
+        android:text="@string/dailyreminder"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_margin="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/remindertime"
+            android:textColor="#3C3C3C"
+            android:text="@string/remindertime"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/remindertime"
+            android:id="@+id/remindertimepicker"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:layout_marginRight="20dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_border"
+                android:text="@string/renumber1"
+                android:id="@+id/renumber1"
+                android:paddingTop="2dp"
+                android:textColor="#3C3C3C"
+                android:paddingBottom="2dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/renumber2"
+                android:background="@drawable/textview_border"
+                android:id="@+id/renumber2"
+                android:paddingTop="2dp"
+                android:textColor="#3C3C3C"
+                android:paddingBottom="2dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reampm"
+                android:background="@drawable/textview_border"
+                android:id="@+id/reampm"
+                android:paddingTop="2dp"
+                android:textColor="#3C3C3C"
+                android:paddingBottom="2dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                />
+        </LinearLayout>
+    </RelativeLayout>
     <View
         android:layout_width="wrap_content"
         android:layout_height="1dp"
@@ -182,6 +286,83 @@
         />
 
     </RelativeLayout>
+    <Switch
+        android:id="@+id/rollovertask"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/rollover"
+        android:textColor="#3C3C3C"
+        android:checked="false"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="20dp"
+        android:gravity="left"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#B3B3B3"
+        android:layout_marginRight="70dp"
+        android:layout_marginLeft="20dp"
+        android:text="@string/rolloverexplanation"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_margin="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rollovertimetext"
+            android:textColor="#3C3C3C"
+            android:text="@string/rollovertimetext"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/rollovertimetext"
+            android:id="@+id/rollovertimepicker"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:layout_marginRight="20dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_border"
+                android:text="@string/number1"
+                android:id="@+id/number1"
+                android:paddingTop="2dp"
+                android:textColor="#3C3C3C"
+                android:paddingBottom="2dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number2"
+                android:background="@drawable/textview_border"
+                android:id="@+id/number2"
+                android:paddingTop="2dp"
+                android:textColor="#3C3C3C"
+                android:paddingBottom="2dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ampm"
+                android:background="@drawable/textview_border"
+                android:id="@+id/ampm"
+                android:paddingTop="2dp"
+                android:textColor="#3C3C3C"
+                android:paddingBottom="2dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                />
+        </LinearLayout>
+    </RelativeLayout>
+
     <View
     android:layout_width="wrap_content"
     android:layout_height="1dp"
@@ -215,6 +396,14 @@
         />
 
     </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/version"
+        android:textColor="#3C3C3C"
+        android:layout_marginLeft="10dp"/>
 
 
+</LinearLayout>
+    </ScrollView>
 </LinearLayout>
