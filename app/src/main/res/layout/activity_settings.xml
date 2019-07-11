@@ -15,7 +15,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="30dp">
+        android:paddingBottom="30dp"
+
+        >
 
 
     <RelativeLayout
@@ -39,7 +41,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/theme"
         android:textSize="12sp"
-        android:layout_margin="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
 
 
         android:textColor="#3C3C3C"
@@ -56,23 +61,28 @@
             android:layout_height="wrap_content"
             android:id="@+id/theme1"
             android:text="@string/theme1"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
             android:layout_alignParentLeft="true"
             android:checked="true"
             android:textColor="#3C3C3C"
+            android:textSize="15sp"
             />
 
 
 
         <View
-            android:layout_margin="10dp"
             android:layout_width="40dp"
             android:layout_height="20dp"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
             android:id="@+id/colorPrimary"
             android:background="@color/colorPrimary"/>
         <View
             android:layout_margin="10dp"
+
             android:layout_width="40dp"
             android:layout_height="20dp"
             android:layout_toLeftOf="@id/colorPrimary"
@@ -87,8 +97,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/theme2"
             android:text="@string/theme2"
-            android:layout_marginLeft="5dp"
-
+            android:layout_marginLeft="10dp"
+            android:textSize="15sp"
             android:layout_alignParentLeft="true"
 
             android:textColor="#3C3C3C"
@@ -96,7 +106,10 @@
 
 
         <View
-            android:layout_margin="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
             android:layout_width="40dp"
             android:layout_height="20dp"
             android:layout_alignParentRight="true"
@@ -118,15 +131,19 @@
             android:layout_height="wrap_content"
             android:id="@+id/theme3"
             android:text="@string/theme3"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
             android:layout_alignParentLeft="true"
+            android:textSize="15sp"
 
             android:textColor="#3C3C3C"
             />
 
 
     <View
-        android:layout_margin="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_width="40dp"
         android:layout_height="20dp"
         android:layout_alignParentRight="true"
@@ -167,8 +184,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/notifications"
-        android:textSize="12sp"
-        android:layout_margin="10dp"
+        android:textSize="13sp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
 
         android:textColor="#3C3C3C"
         android:text="@string/notifications"
@@ -182,7 +202,8 @@
         android:text="@string/daily"
         android:textColor="#3C3C3C"
         android:checked="true"
-        android:layout_marginLeft="10dp"
+        android:textSize="15sp"
+        android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:gravity="left">
 
@@ -192,15 +213,19 @@
         android:layout_height="wrap_content"
         android:textColor="#B3B3B3"
         android:layout_marginRight="70dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="30dp"
         android:text="@string/dailyreminder"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:layout_margin="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="15sp"
             android:id="@+id/remindertime"
             android:textColor="#3C3C3C"
             android:text="@string/remindertime"
@@ -223,6 +248,7 @@
                 android:id="@+id/renumber1"
                 android:paddingTop="2dp"
                 android:textColor="#3C3C3C"
+                android:textSize="15sp"
                 android:paddingBottom="2dp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
@@ -235,6 +261,7 @@
                 android:id="@+id/renumber2"
                 android:paddingTop="2dp"
                 android:textColor="#3C3C3C"
+                android:textSize="15sp"
                 android:paddingBottom="2dp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
@@ -246,6 +273,7 @@
                 android:background="@drawable/textview_border"
                 android:id="@+id/reampm"
                 android:paddingTop="2dp"
+                android:textSize="15sp"
                 android:textColor="#3C3C3C"
                 android:paddingBottom="2dp"
                 android:paddingLeft="20dp"
@@ -279,8 +307,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/rollover"
-        android:textSize="12sp"
-        android:layout_margin="10dp"
+        android:textSize="13sp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
         android:textColor="#3C3C3C"
         android:text="@string/rollover"
         />
@@ -293,22 +324,31 @@
         android:text="@string/rollover"
         android:textColor="#3C3C3C"
         android:checked="false"
-        android:layout_marginLeft="10dp"
+        android:textSize="15sp"
         android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+
         android:gravity="left"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#B3B3B3"
+
         android:layout_marginRight="70dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="30dp"
         android:text="@string/rolloverexplanation"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:layout_margin="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
             android:layout_width="wrap_content"
+            android:textSize="15sp"
             android:layout_height="wrap_content"
             android:id="@+id/rollovertimetext"
             android:textColor="#3C3C3C"
@@ -334,6 +374,7 @@
                 android:textColor="#3C3C3C"
                 android:paddingBottom="2dp"
                 android:paddingLeft="20dp"
+                android:textSize="15sp"
                 android:paddingRight="20dp"
                 />
             <TextView
@@ -345,6 +386,7 @@
                 android:paddingTop="2dp"
                 android:textColor="#3C3C3C"
                 android:paddingBottom="2dp"
+                android:textSize="15sp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 />
@@ -355,6 +397,7 @@
                 android:background="@drawable/textview_border"
                 android:id="@+id/ampm"
                 android:paddingTop="2dp"
+                android:textSize="15sp"
                 android:textColor="#3C3C3C"
                 android:paddingBottom="2dp"
                 android:paddingLeft="20dp"
@@ -388,8 +431,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/about"
-        android:textSize="12sp"
-        android:layout_margin="10dp"
+        android:textSize="13sp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
 
         android:textColor="#3C3C3C"
         android:text="@string/about"
@@ -401,7 +447,11 @@
         android:layout_height="wrap_content"
         android:text="@string/version"
         android:textColor="#3C3C3C"
-        android:layout_marginLeft="10dp"/>
+        android:textSize="15sp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"/>
 
 
 </LinearLayout>
