@@ -13,6 +13,7 @@ android:layout_height="wrap_content"
         android:id="@+id/check"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:buttonTint="@color/colorAccent"
         android:layout_alignParentLeft="true"
         android:textColor="#5A5A5A"
@@ -51,6 +52,6 @@ android:layout_height="wrap_content"
         android:layout_marginRight="15dp"
         android:layout_height="1dp"
         android:background="#DFDFDF"
-        android:layout_below="@id/content"/>
+        android:layout_below="@id/check"/>
 
 </RelativeLayout>
