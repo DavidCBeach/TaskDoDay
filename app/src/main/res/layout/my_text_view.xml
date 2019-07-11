@@ -16,6 +16,8 @@ android:layout_height="wrap_content"
         android:buttonTint="@color/colorAccent"
         android:layout_alignParentLeft="true"
         android:textColor="#5A5A5A"
+        android:textSize="20sp"
+        android:paddingLeft="@dimen/padding_checkbox"
         />
 
 

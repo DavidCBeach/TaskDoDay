@@ -82,19 +82,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         // - replace the contents of the view with that element
         mPosition = position;
         Log.d(TAG, "taco");
-        holder.textView.setText(mDataset.get(position));
+        holder.checkView.setText(mDataset.get(position));
         if(!mDeleteMode){
             holder.deletecheckView.setVisibility(View.GONE);
         }
 
         if(mStatus.get(position)){
             holder.checkView.setChecked(true);
-            holder.textView.setTextColor(Color.parseColor("#DFDFDF"));
-            holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.checkView.setTextColor(Color.parseColor("#DFDFDF"));
+            holder.checkView.setPaintFlags(holder.checkView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             holder.checkView.setChecked(false);
-            holder.textView.setPaintFlags( holder.textView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-            holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
+            holder.checkView.setPaintFlags( holder.checkView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+            holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
 
         }
         if(!mIsOld){
@@ -104,15 +104,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                         holder.checkView.setChecked(false);
                         Update(mID.get(position), 0);
                         mStatus.set(position,false);
-                        holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
-                        holder.textView.setPaintFlags( holder.textView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                        holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
+                        holder.checkView.setPaintFlags( holder.textView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
 
                     } else {
                         holder.checkView.setChecked(true);
                         Update(mID.get(position), 1);
                         mStatus.set(position,true);
-                        holder.textView.setTextColor(Color.parseColor("#DFDFDF"));
-                        holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        holder.checkView.setTextColor(Color.parseColor("#DFDFDF"));
+                        holder.checkView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     }
                 }
             });
@@ -122,18 +122,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                         holder.deletecheckView.setChecked(true);
                         deletables.add(mID.get(position));
                         holder.parentView.setBackgroundColor(Color.parseColor("#ff0000"));
-                        holder.textView.setTextColor(Color.parseColor("#ffffff"));
+                        holder.checkView.setTextColor(Color.parseColor("#ffffff"));
                     } else if(!deletables.contains(mID.get(position))){
                         holder.deletecheckView.setChecked(true);
                         deletables.add(mID.get(position));
                         holder.parentView.setBackgroundColor(Color.parseColor("#ff0000"));
-                        holder.textView.setTextColor(Color.parseColor("#ffffff"));
+                        holder.checkView.setTextColor(Color.parseColor("#ffffff"));
 
                     } else {
                         holder.deletecheckView.setChecked(false);
                         deletables.remove(deletables.indexOf(mID.get(position)));
                         holder.parentView.setBackgroundColor(Color.parseColor("#ffffff"));
-                        holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
+                        holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
                     }
                     System.out.println(deletables);
 

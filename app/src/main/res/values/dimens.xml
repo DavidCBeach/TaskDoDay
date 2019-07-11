@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="dim_16dp">45dp</dimen>
+
+
+    <dimen name="padding_checkbox">10dp</dimen>
+
+
 </resources>
