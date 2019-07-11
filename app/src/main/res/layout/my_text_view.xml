@@ -7,16 +7,18 @@ android:layout_height="wrap_content"
     android:id="@+id/taskLayout"
     android:layout_centerInParent="true"
     >
-<ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/check"
-    android:layout_alignParentLeft="true"
-    android:layout_marginLeft="20dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginBottom="10dp"
-    android:layout_marginTop="10dp"
-   />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/check"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="8dp"
+        android:buttonTint="@color/colorAccent"
+        android:layout_alignParentLeft="true"
+        android:textColor="#5A5A5A"
+        />
+
+
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -27,21 +29,24 @@ android:layout_height="wrap_content"
     android:textColor="#5A5A5A"
 
     />
-    <ImageView
+
+    <CheckBox
+        android:id="@+id/deletecheck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/deletecheck"
-        android:background="@drawable/ic_check_box_outline_blank_grey"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="10dp"
-        />
+        android:layout_marginBottom="10dp"
+
+
+        android:textColor="#5A5A5A" />
+
+
     <View
         android:layout_width="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:layout_height="1dp"
         android:background="#DFDFDF"
         android:layout_below="@id/content"/>

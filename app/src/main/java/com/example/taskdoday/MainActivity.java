@@ -83,27 +83,24 @@ public class MainActivity extends AppCompatActivity {
         // specify an adapter (see also next example)
 
         et = findViewById(R.id.et);
-        et.setVisibility(View.GONE);
+        //et.setVisibility(View.GONE);
         done = findViewById(R.id.done);
-        done.setVisibility(View.GONE);
+        //done.setVisibility(View.GONE);
         bt = findViewById(R.id.addtask);
-        bt.setVisibility(View.GONE);
+       // bt.setVisibility(View.GONE);
         calendar = Calendar.getInstance();
         calendarDialog = new CalendarDialog();
         sortDialog = new SortDialog();
         View old = findViewById(R.id.oldfilter);
-        old.setVisibility(View.GONE);
+        //old.setVisibility(View.GONE);
         sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
         LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
-        deleteinterface.setVisibility(View.GONE);
+        //deleteinterface.setVisibility(View.GONE);
         lastOld = 0;
 
 
         setDate();
-
         refreshTasks();
-
-
         setSwipes();
 
         // Create a new map of values, where column names are the keys
@@ -196,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.delete:
-                if(!getIsOld()) {
+                if(!getIsOld() && (et.getVisibility() == View.GONE)) {
                     SlideAnimationUtil.slideInFromBottom(getApplicationContext(), findViewById(R.id.atton));
                     SlideAnimationUtil.slideInFromBottom(getApplicationContext(), findViewById(R.id.attonu));
                     ArrayList<String> myDataset = Read();
@@ -280,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
             strDate = "Yesterday";
         }
         setTitle(strDate);
+        System.out.println(this.getCurrentFocus());
     }
 
     private void SwipeRight() {

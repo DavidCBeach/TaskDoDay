@@ -29,7 +29,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_below="@id/taskshow"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10dp"
+        android:visibility="gone"/>
 
 
 
@@ -95,6 +96,7 @@
                 android:layout_height="30dp"
 
                 android:onClick="done"
+                android:visibility="gone"
                 android:text="@string/done"
                 android:id="@+id/done"
                 android:textColor="@color/colorPrimary"
@@ -109,6 +111,7 @@
                 android:text="@string/addtask"
                 android:id="@+id/addtask"
                 android:onClick="addTask"
+                android:visibility="gone"
 
                 android:background="#FFFFFF"
                 android:textColor="@color/colorAccent"
@@ -125,6 +128,7 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:id="@+id/deleteinterface"
+        android:visibility="gone"
         >
         <View
             android:layout_width="wrap_content"
@@ -172,6 +176,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/old_view"
         android:id="@+id/oldfilter"
+        android:visibility="gone"
         />
 
     <Button android:layout_width="58dp"

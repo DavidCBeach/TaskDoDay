@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -42,8 +43,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         // each data item is just a string in this case
         public TextView textView;
         public RelativeLayout parentView;
-        public ImageView checkView;
-        public ImageView deletecheckView;
+        public CheckBox checkView;
+        public CheckBox deletecheckView;
         public MyViewHolder(View v) {
             super(v);
             textView = v.findViewById(R.id.content);
@@ -87,11 +88,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         }
 
         if(mStatus.get(position)){
-            holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
+            holder.checkView.setChecked(true);
             holder.textView.setTextColor(Color.parseColor("#DFDFDF"));
             holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
-            holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp));
+            holder.checkView.setChecked(false);
             holder.textView.setPaintFlags( holder.textView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
             holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
 
@@ -100,14 +101,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
             holder.checkView.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View view){
                     if(mStatus.get(position)){
-                        holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_black_24dp));
+                        holder.checkView.setChecked(false);
                         Update(mID.get(position), 0);
                         mStatus.set(position,false);
                         holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
                         holder.textView.setPaintFlags( holder.textView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
 
                     } else {
-                        holder.checkView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_black_24dp));
+                        holder.checkView.setChecked(true);
                         Update(mID.get(position), 1);
                         mStatus.set(position,true);
                         holder.textView.setTextColor(Color.parseColor("#DFDFDF"));
@@ -118,18 +119,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
             holder.deletecheckView.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View view){
                     if(deletables.isEmpty()){
-                        holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_grey));
+                        holder.deletecheckView.setChecked(true);
                         deletables.add(mID.get(position));
                         holder.parentView.setBackgroundColor(Color.parseColor("#ff0000"));
                         holder.textView.setTextColor(Color.parseColor("#ffffff"));
                     } else if(!deletables.contains(mID.get(position))){
-                        holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_grey));
+                        holder.deletecheckView.setChecked(true);
                         deletables.add(mID.get(position));
                         holder.parentView.setBackgroundColor(Color.parseColor("#ff0000"));
                         holder.textView.setTextColor(Color.parseColor("#ffffff"));
 
                     } else {
-                        holder.deletecheckView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_check_box_outline_blank_grey));
+                        holder.deletecheckView.setChecked(false);
                         deletables.remove(deletables.indexOf(mID.get(position)));
                         holder.parentView.setBackgroundColor(Color.parseColor("#ffffff"));
                         holder.textView.setTextColor(Color.parseColor("#5A5A5A"));
