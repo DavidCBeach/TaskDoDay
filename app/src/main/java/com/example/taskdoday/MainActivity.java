@@ -3,6 +3,7 @@ package com.example.taskdoday;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
@@ -66,8 +67,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         dbHelper = new FeedReaderDbHelper(getApplicationContext());
+        calendar = Calendar.getInstance();
+
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        if (prefs.getBoolean("firstrun", true)) {
+            // Do first run stuff here then set 'firstrun' as false
+            setTheme();
+            // using the following line to edit/commit prefs
+            prefs.edit().putBoolean("firstrun", false).commit();
+        }
+        setContentView(R.layout.activity_main);
+
         // Gets the data repository in write mode
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
@@ -88,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         //done.setVisibility(View.GONE);
         bt = findViewById(R.id.addtask);
        // bt.setVisibility(View.GONE);
-        calendar = Calendar.getInstance();
+
         calendarDialog = new CalendarDialog();
         sortDialog = new SortDialog();
         View old = findViewById(R.id.oldfilter);
@@ -102,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
         setDate();
         refreshTasks();
         setSwipes();
+
+
+
 
         // Create a new map of values, where column names are the keys
 
@@ -523,5 +537,28 @@ public class MainActivity extends AppCompatActivity {
         atton.setVisibility(View.VISIBLE);
         Button attonu = findViewById(R.id.attonu);
         attonu.setVisibility(View.VISIBLE);
+    }
+
+
+    private void setTheme(){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
+        Calendar tempcal = Calendar.getInstance();
+        tempcal.setTimeInMillis(4718552490997L);
+        String strDate =  mdformat.format(tempcal.getTime());
+        String date = strDate;
+        Integer status = 0;
+        String content = "start";
+        Long millicode = Long.getLong("4718552490997L");
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, millicode );
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
+        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
+        db.close();
     }
 }
