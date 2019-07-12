@@ -26,6 +26,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -61,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
     private GregorianCalendar Gcalendar;
     private String sortOrder;
     private int lastOld;
+    private int theme;
+    private String primaryColor;
+    private String accentColor;
+
 
 
     FeedReaderDbHelper dbHelper;
@@ -73,10 +78,11 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
         if (prefs.getBoolean("firstrun", true)) {
             // Do first run stuff here then set 'firstrun' as false
-            setTheme();
+            setInitTheme();
             // using the following line to edit/commit prefs
-            prefs.edit().putBoolean("firstrun", false).commit();
+            prefs.edit().putBoolean("firstrun", false).apply();
         }
+        themeRead();
         setContentView(R.layout.activity_main);
 
         // Gets the data repository in write mode
@@ -540,7 +546,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void setTheme(){
+    private void setInitTheme(){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
@@ -560,5 +566,65 @@ public class MainActivity extends AppCompatActivity {
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
         System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
         db.close();
+    }
+    private void setTheme(){
+        if(theme == 0){
+            setTheme( R.style.AppTheme);
+            primaryColor="#008577";
+            accentColor="#D81B60";
+        } else if(theme == 1){
+            setTheme( R.style.AppTheme2);
+            primaryColor="#F5E2E2";
+            accentColor="#FF9696";
+
+        } else {
+            setTheme( R.style.AppTheme3);
+            primaryColor="#313131";
+            accentColor="#FFC800";
+
+        }
+        setContentView(R.layout.activity_main);
+
+
+
+    }
+    private void themeRead(){
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                BaseColumns._ID,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS,
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = FeedReaderContract.FeedEntry._ID + " = ?";
+        //String[] selectionArgs = { "My Title" };
+
+        String[] selectionArgs = {"1"};
+        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
+
+
+
+        Cursor cursor = db.query(
+                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
+                projection,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                sortOrder               // The sort order
+        );
+
+        while(cursor.moveToNext()) {
+            theme = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
+
+
+        }
+        cursor.close();
+        db.close();
+        setTheme();
     }
 }

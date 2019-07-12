@@ -1,6 +1,7 @@
 package com.example.taskdoday;
 
 import android.app.ActionBar;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -37,14 +38,17 @@ public class SettingsActivity extends AppCompatActivity {
             setTheme( R.style.AppTheme);
             primaryColor="#008577";
             accentColor="#D81B60";
+            Update("1",0);
         } else if(theme == 1){
             setTheme( R.style.AppTheme2);
             primaryColor="#F5E2E2";
             accentColor="#FF9696";
+            Update("1",1);
         } else {
             setTheme( R.style.AppTheme3);
             primaryColor="#313131";
             accentColor="#FFC800";
+            Update("1",2);
         }
         setContentView(R.layout.activity_settings);
         CheckBox theme1 = findViewById(R.id.theme1);
@@ -67,6 +71,27 @@ public class SettingsActivity extends AppCompatActivity {
 
         }
 
+
+    }
+    private void Update(String id, Integer status) {
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+
+        // New value for one column
+
+        ContentValues values = new ContentValues();
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
+
+        // Which row to update, based on the title
+        String selection = BaseColumns._ID + " LIKE ?";
+        String[] selectionArgs = { id };
+
+        int count = db.update(
+                FeedReaderContract.FeedEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
 
     }
     private void themeRead(){
@@ -131,4 +156,5 @@ public class SettingsActivity extends AppCompatActivity {
         setTheme();
 
     }
+
 }
