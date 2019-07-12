@@ -84,6 +84,7 @@ public class StatsActivity extends AppCompatActivity {
                 list0.add(status);
             } else {
                 list1.add(status);
+                list1.add(status);
             }
 
 
@@ -99,6 +100,9 @@ public class StatsActivity extends AppCompatActivity {
             System.out.println(percent);
             TextView percentview = findViewById(R.id.percent);
             percentview.setText(percent.toString() + "%");
+        } else {
+            TextView nostats = findViewById(R.id.percenttitle);
+            nostats.setVisibility(View.GONE);
         }
 
 

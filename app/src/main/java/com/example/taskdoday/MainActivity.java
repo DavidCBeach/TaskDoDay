@@ -3,6 +3,7 @@ package com.example.taskdoday;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
@@ -25,6 +26,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -60,14 +62,29 @@ public class MainActivity extends AppCompatActivity {
     private GregorianCalendar Gcalendar;
     private String sortOrder;
     private int lastOld;
+    private int theme;
+    private String primaryColor;
+    private String accentColor;
+
 
 
     FeedReaderDbHelper dbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         dbHelper = new FeedReaderDbHelper(getApplicationContext());
+        calendar = Calendar.getInstance();
+
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        if (prefs.getBoolean("firstrun", true)) {
+            // Do first run stuff here then set 'firstrun' as false
+            setInitTheme();
+            // using the following line to edit/commit prefs
+            prefs.edit().putBoolean("firstrun", false).apply();
+        }
+        themeRead();
+        setContentView(R.layout.activity_main);
+
         // Gets the data repository in write mode
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
@@ -88,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         //done.setVisibility(View.GONE);
         bt = findViewById(R.id.addtask);
        // bt.setVisibility(View.GONE);
-        calendar = Calendar.getInstance();
+
         calendarDialog = new CalendarDialog();
         sortDialog = new SortDialog();
         View old = findViewById(R.id.oldfilter);
@@ -102,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
         setDate();
         refreshTasks();
         setSwipes();
+
+
+
 
         // Create a new map of values, where column names are the keys
 
@@ -523,5 +543,88 @@ public class MainActivity extends AppCompatActivity {
         atton.setVisibility(View.VISIBLE);
         Button attonu = findViewById(R.id.attonu);
         attonu.setVisibility(View.VISIBLE);
+    }
+
+
+    private void setInitTheme(){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
+        Calendar tempcal = Calendar.getInstance();
+        tempcal.setTimeInMillis(4718552490997L);
+        String strDate =  mdformat.format(tempcal.getTime());
+        String date = strDate;
+        Integer status = 0;
+        String content = "start";
+        Long millicode = Long.getLong("4718552490997L");
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, millicode );
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
+        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
+        db.close();
+    }
+    private void setTheme(){
+        if(theme == 0){
+            setTheme( R.style.AppTheme);
+            primaryColor="#008577";
+            accentColor="#D81B60";
+        } else if(theme == 1){
+            setTheme( R.style.AppTheme2);
+            primaryColor="#F5E2E2";
+            accentColor="#FF9696";
+
+        } else {
+            setTheme( R.style.AppTheme3);
+            primaryColor="#313131";
+            accentColor="#FFC800";
+
+        }
+        setContentView(R.layout.activity_main);
+
+
+
+    }
+    private void themeRead(){
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                BaseColumns._ID,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS,
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = FeedReaderContract.FeedEntry._ID + " = ?";
+        //String[] selectionArgs = { "My Title" };
+
+        String[] selectionArgs = {"1"};
+        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
+
+
+
+        Cursor cursor = db.query(
+                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
+                projection,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                sortOrder               // The sort order
+        );
+
+        while(cursor.moveToNext()) {
+            theme = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
+
+
+        }
+        cursor.close();
+        db.close();
+        setTheme();
     }
 }

@@ -62,8 +62,9 @@
             android:id="@+id/theme1"
             android:text="@string/theme1"
             android:layout_marginLeft="10dp"
+            android:onClick="theme1click"
             android:layout_alignParentLeft="true"
-            android:checked="true"
+            android:checked="false"
             android:textColor="#3C3C3C"
             android:textSize="15sp"
             />
@@ -100,7 +101,7 @@
             android:layout_marginLeft="10dp"
             android:textSize="15sp"
             android:layout_alignParentLeft="true"
-
+            android:onClick="theme2click"
             android:textColor="#3C3C3C"
             />
 
@@ -134,6 +135,7 @@
             android:layout_marginLeft="10dp"
             android:layout_alignParentLeft="true"
             android:textSize="15sp"
+            android:onClick="theme3click"
 
             android:textColor="#3C3C3C"
             />
