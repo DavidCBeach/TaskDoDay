@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CalendarView;
 
 import java.util.Calendar;
@@ -17,14 +18,17 @@ public class CalendarDialog extends DialogFragment {
 
     private Calendar calendar;
     private GregorianCalendar Gcalendar;
+    private int color;
+    private int colorBackground;
     public CalendarDialog() {
 
     }
-    public void setArguements(Calendar mycalendar){
+    public void setArguements(Calendar mycalendar,int myColor, int myColorBackground){
         calendar = mycalendar;
         Gcalendar = new GregorianCalendar();
         Gcalendar.setTimeInMillis(calendar.getTimeInMillis());
-
+        color = myColor;
+        colorBackground = myColorBackground;
     }
 
     @Override
@@ -39,6 +43,13 @@ public class CalendarDialog extends DialogFragment {
                 Gcalendar = new GregorianCalendar( year, month, dayOfMonth );
             }//met
         });
+        Button cancel = view.findViewById(R.id.calendarCancel);
+        cancel.setTextColor(getResources().getColor(color));
+        cancel.setBackgroundColor(getResources().getColor(colorBackground));
+        Button go = view.findViewById(R.id.go);
+        go.setTextColor(getResources().getColor(color));
+        go.setBackgroundColor(getResources().getColor(colorBackground));
+
         return view;
     }
 

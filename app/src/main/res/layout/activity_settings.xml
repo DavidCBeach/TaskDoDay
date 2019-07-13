@@ -53,6 +53,14 @@
 
 
     </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#B3B3B3"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/restartnotif"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -115,13 +123,14 @@
             android:layout_height="20dp"
             android:layout_alignParentRight="true"
             android:id="@+id/colorLightPrimary"
-            android:background="@color/colorLightPrimary"/>
+            android:background="@drawable/textview_border"
+            />
         <View
             android:layout_margin="10dp"
             android:layout_width="40dp"
             android:layout_height="20dp"
             android:layout_toLeftOf="@id/colorLightPrimary"
-            android:background="@color/colorLightAccent"/>
+            android:background="@color/colorAccent"/>
 
     </RelativeLayout>
     <RelativeLayout

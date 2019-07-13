@@ -89,6 +89,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="right"
+            android:id="@+id/addtasklayout"
             android:background="#FFFFFF"
             >
 
@@ -99,7 +100,7 @@
                 android:visibility="gone"
                 android:text="@string/done"
                 android:id="@+id/done"
-                android:textColor="@color/colorPrimary"
+
                 android:background="#FFFFFF"
                 android:layout_margin="5dp"
 
@@ -114,7 +115,7 @@
                 android:visibility="gone"
 
                 android:background="#FFFFFF"
-                android:textColor="@color/colorAccent"
+
                 android:layout_margin="5dp"
                 style="?android:attr/borderlessButtonStyle"
                 />

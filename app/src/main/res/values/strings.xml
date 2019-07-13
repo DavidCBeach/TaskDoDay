@@ -39,4 +39,5 @@
     <string name="renumber2">00</string>
     <string name="reampm">PM</string>
     <string name="version">Version: 0.0.1</string>
+    <string name="restartnotif">Setting a new theme will require restarting the app to apply</string>
 </resources>

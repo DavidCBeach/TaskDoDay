@@ -6,6 +6,7 @@ import android.provider.BaseColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
@@ -17,12 +18,16 @@ import java.util.GregorianCalendar;
 public class StatsActivity extends AppCompatActivity {
     FeedReaderDbHelper dbHelper;
     Calendar calendar;
+    private int theme;
+    private int primaryColor;
+    private int accentColor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stats);
-        setTitle("Statistics");
+
         dbHelper = new FeedReaderDbHelper(getApplicationContext());
+        themeRead();
+        setTitle("Statistics");
         calendar = Calendar.getInstance();
         percentRead();
 
@@ -111,5 +116,72 @@ public class StatsActivity extends AppCompatActivity {
 
         db.close();
 
+    }
+    private void setTheme(){
+        if(theme == 0){
+            setTheme( R.style.AppTheme);
+            primaryColor=R.color.colorPrimary;
+            accentColor=R.color.colorAccent;
+        } else if(theme == 1){
+            setTheme( R.style.AppTheme2);
+            primaryColor=R.color.grey2;
+            accentColor=R.color.colorAccent;
+
+
+
+        } else {
+            setTheme( R.style.AppTheme3);
+            primaryColor=R.color.colorDarkPrimary;
+            accentColor=R.color.colorDarkAccent;
+
+        }
+
+        setContentView(R.layout.activity_stats);
+        TextView percent = findViewById(R.id.percent);
+        percent.setTextColor(getResources().getColor(accentColor));
+        TextView percenttitle = findViewById(R.id.percenttitle);
+        percenttitle.setTextColor(getResources().getColor(R.color.grey));
+
+
+
+    }
+    private void themeRead(){
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                BaseColumns._ID,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS,
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = FeedReaderContract.FeedEntry._ID + " = ?";
+        //String[] selectionArgs = { "My Title" };
+
+        String[] selectionArgs = {"1"};
+        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
+
+
+
+        Cursor cursor = db.query(
+                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
+                projection,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                sortOrder               // The sort order
+        );
+
+        while(cursor.moveToNext()) {
+            theme = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
+
+
+        }
+        cursor.close();
+        db.close();
+        setTheme();
     }
 }

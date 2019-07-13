@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.os.Build;
 import android.provider.BaseColumns;
 
 import android.support.v4.app.FragmentManager;
@@ -43,6 +45,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import static com.example.taskdoday.R.menu.menu_main;
+import static com.example.taskdoday.R.menu.menu_main2;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -63,8 +66,10 @@ public class MainActivity extends AppCompatActivity {
     private String sortOrder;
     private int lastOld;
     private int theme;
-    private String primaryColor;
-    private String accentColor;
+    private int primaryColor;
+    private int accentColor;
+    private int buttonBackColor;
+    private boolean darkMode;
 
 
 
@@ -83,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
             prefs.edit().putBoolean("firstrun", false).apply();
         }
         themeRead();
-        setContentView(R.layout.activity_main);
 
         // Gets the data repository in write mode
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
@@ -183,9 +187,13 @@ public class MainActivity extends AppCompatActivity {
     {
         // Add items to action bar
 
-
-        getMenuInflater().inflate(menu_main, menu);
-
+        if(theme == 0){
+            getMenuInflater().inflate(menu_main, menu);
+        } else if (theme == 1){
+            getMenuInflater().inflate(menu_main2, menu);
+        } else {
+            getMenuInflater().inflate(menu_main, menu);
+        }
 
 
         return true;
@@ -200,14 +208,17 @@ public class MainActivity extends AppCompatActivity {
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.calendar_show:
-                calendarDialog.setArguements(calendar);
+                calendarDialog.setArguements(calendar,accentColor,buttonBackColor);
                 calendarDialog.show(fm, "photo");
                 return true;
             case R.id.stats_show:
                 startActivity(new Intent(this, StatsActivity.class));
                 return true;
             case R.id.sort:
+                sortDialog.setAttributes(primaryColor,buttonBackColor);
                 sortDialog.show(fm, "sort");
+
+
                 return true;
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
@@ -229,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                         notaskl.setVisibility(View.VISIBLE);
                     }
                     System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-                    mAdapter = new MyAdapter(getApplicationContext(), myDataset, myStatus, myID, getIsOld(), true);
+                    mAdapter = new MyAdapter(getApplicationContext(), myDataset, myStatus, myID, getIsOld(), true, darkMode);
                     recyclerView.setAdapter(mAdapter);
                     LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
                     deleteinterface.setVisibility(View.VISIBLE);
@@ -432,18 +443,20 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
-        //the below 3 lines is for backlogging 1 week of task for testing purposes
-//        calendar.add(5,-7);
+        //the below 2 lines is for backlogging 1 week of task for testing purposes
+//      calendar.add(5,-7);
 //        String strDate =  mdformat.format(calendar.getTime());
-//        calendar.add(5,7);
 
+        Long dateMilli = calendar.getTimeInMillis();
         String strDate =  mdformat.format(calendar.getTime());
         String date = strDate;
         Integer status = 0;
+        //and this line
+//               calendar.add(5,7);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, calendar.getTimeInMillis() );
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, dateMilli );
         System.out.println(calendar.getTimeInMillis());
 
         // Insert the new row, returning the primary key value of the new row
@@ -500,7 +513,7 @@ public class MainActivity extends AppCompatActivity {
             notaskl.setVisibility(View.VISIBLE);
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
-        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld(),false);
+        mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld(),false,darkMode);
         recyclerView.setAdapter(mAdapter);
     }
     private void setSwipes(){
@@ -570,22 +583,45 @@ public class MainActivity extends AppCompatActivity {
     private void setTheme(){
         if(theme == 0){
             setTheme( R.style.AppTheme);
-            primaryColor="#008577";
-            accentColor="#D81B60";
+            buttonBackColor =R.color.white;
+            primaryColor=R.color.colorPrimary;
+            accentColor=R.color.colorAccent;
+            darkMode = false;
         } else if(theme == 1){
             setTheme( R.style.AppTheme2);
-            primaryColor="#F5E2E2";
-            accentColor="#FF9696";
-
+            buttonBackColor =R.color.white;
+            primaryColor=R.color.grey2;
+            accentColor=R.color.colorAccent;
+            darkMode = false;
         } else {
             setTheme( R.style.AppTheme3);
-            primaryColor="#313131";
-            accentColor="#FFC800";
+            buttonBackColor =R.color.colorDarkPrimary;
+            primaryColor=R.color.white;
+            accentColor=R.color.colorDarkAccent;
+
+
+            darkMode = true;
+
+
 
         }
+
         setContentView(R.layout.activity_main);
+        if(theme == 2){
+            Button addthing = findViewById(R.id.atton);
+            addthing.setBackgroundResource(R.drawable.ic_add_circle50_yellow);
+            Button addthingu = findViewById(R.id.attonu);
+            addthingu.setBackgroundResource(R.drawable.blackcircle);
+        }
 
-
+        done = findViewById(R.id.done);
+        done.setTextColor(getResources().getColor(primaryColor));
+        done.setBackgroundColor(getResources().getColor(buttonBackColor));
+        Button addtask = findViewById(R.id.addtask);
+        addtask.setTextColor(getResources().getColor(accentColor));
+        addtask.setBackgroundColor(getResources().getColor(buttonBackColor));
+        LinearLayout addtasklayout = findViewById(R.id.addtasklayout);
+        addtasklayout.setBackgroundColor(getResources().getColor(buttonBackColor));
 
     }
     private void themeRead(){

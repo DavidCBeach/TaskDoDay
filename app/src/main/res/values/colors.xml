@@ -9,6 +9,7 @@
     <color name="colorLightPrimary">#F5E2E2</color>
     <color name="colorLightAccent">#FF9696</color>
     <color name="grey">#ACACAC</color>
+    <color name="grey2">#707070</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <!--<color name="colorPrimary">#008577</color>-->
