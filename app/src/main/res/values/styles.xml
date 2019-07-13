@@ -34,6 +34,8 @@
         parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
         <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:panelColorBackground">@color/white</item>
 
         <!-- Support library compatibility -->
