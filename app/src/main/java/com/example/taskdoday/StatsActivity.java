@@ -89,7 +89,6 @@ public class StatsActivity extends AppCompatActivity {
                 list0.add(status);
             } else {
                 list1.add(status);
-                list1.add(status);
             }
 
 

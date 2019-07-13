@@ -505,15 +505,15 @@ public class MainActivity extends AppCompatActivity {
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         //the below 2 lines is for backlogging 1 week of task for testing purposes
-//      calendar.add(5,-7);
-//        String strDate =  mdformat.format(calendar.getTime());
+//     calendar.add(5,-7);
+//     String strDate =  mdformat.format(calendar.getTime());
 
         Long dateMilli = calendar.getTimeInMillis();
         String strDate =  mdformat.format(calendar.getTime());
         String date = strDate;
         Integer status = 0;
         //and this line
-//               calendar.add(5,7);
+//              calendar.add(5,7);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
