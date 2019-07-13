@@ -40,4 +40,6 @@
     <string name="reampm">PM</string>
     <string name="version">Version: 0.0.1</string>
     <string name="restartnotif">Setting a new theme will require restarting the app to apply</string>
+    <string name="channel_name">taskdodaychannel</string>
+    <string name="channel_description">for reminders</string>
 </resources>

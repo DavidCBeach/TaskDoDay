@@ -1,5 +1,9 @@
 package com.example.taskdoday;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +16,8 @@ import android.provider.BaseColumns;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -83,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
         if (prefs.getBoolean("firstrun", true)) {
             // Do first run stuff here then set 'firstrun' as false
-            setInitTheme();
+            setInit();
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
         }
@@ -127,9 +133,64 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         // Create a new map of values, where column names are the keys
 
 
+
+    }
+    public void notificationSetup(){
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                BaseColumns._ID,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_DATE,
+        };
+
+
+        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " = ?";
+
+        String[] selectionArgs = {"-1"};
+        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
+
+
+
+        Cursor cursor = db.query(
+                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
+                projection,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                sortOrder               // The sort order
+        );
+        String time = new String();
+        while(cursor.moveToNext()) {
+            time = cursor.getString(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE));
+
+
+        }
+        cursor.close();
+        db.close();
+        String[] timespit = time.split(":");
+        int hour = Integer.parseInt(timespit[0]);
+        int minute = Integer.parseInt(timespit[1]);
+        Calendar tempcal = Calendar.getInstance();
+        tempcal.set(Calendar.HOUR,hour);
+        tempcal.set(Calendar.MINUTE,minute);
+
+
+        Intent notifyIntent = new Intent(this,MyReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        //Long milli = 1000 * 60 * 60 * 24L;
+        Long milli = 1000 * 60L;
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
+               milli , pendingIntent);
 
     }
 
@@ -559,7 +620,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void setInitTheme(){
+    private void setInit(){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
@@ -567,7 +628,7 @@ public class MainActivity extends AppCompatActivity {
         tempcal.setTimeInMillis(4718552490997L);
         String strDate =  mdformat.format(tempcal.getTime());
         String date = strDate;
-        Integer status = 0;
+        Integer status = 1;
         String content = "start";
         Long millicode = Long.getLong("4718552490997L");
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
@@ -578,8 +639,46 @@ public class MainActivity extends AppCompatActivity {
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
         System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
+
+        values = new ContentValues();
+        mdformat = new SimpleDateFormat("HH:mm");
+        tempcal = Calendar.getInstance();
+        tempcal.set(Calendar.HOUR, 2);
+        tempcal.set(Calendar.MINUTE, 0);
+        System.out.println(tempcal.getTime());
+        strDate =  mdformat.format(tempcal.getTime());
+        System.out.println(mdformat.format(tempcal.getTime()));
+        date = strDate;
+        status = -1;
+        content = "reminder";
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, millicode );
+// Insert the new row, returning the primary key value of the new row
+        newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
+        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
         db.close();
+
+        notificationSetup();
+        createNotificationChannel();
     }
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("1", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
     private void setTheme(){
         if(theme == 0){
             setTheme( R.style.AppTheme);

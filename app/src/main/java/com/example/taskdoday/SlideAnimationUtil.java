@@ -21,8 +21,17 @@ public class SlideAnimationUtil {
     public static void slideInFromTop(Context context, View view) {
         runSimpleAnimation(context, view, R.anim.slide_from_top);
     }
+    public static void slideInToTop(Context context, View view) {
+        runSimpleAnimation(context, view, R.anim.slide_to_top);
+    }
     public static void slideInFromTopSlow(Context context, View view) {
         runSimpleAnimation(context, view, R.anim.slide_from_top_slow);
+    }
+    public static void slideInFromTopActual(Context context, View view) {
+        runSimpleAnimation(context, view, R.anim.slide_to_top_actual);
+    }
+    public static void slideInToTopActual(Context context, View view) {
+        runSimpleAnimation(context, view, R.anim.slide_from_top_actual);
     }
 
     /**

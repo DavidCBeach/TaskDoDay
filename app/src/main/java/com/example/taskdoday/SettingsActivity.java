@@ -1,7 +1,11 @@
 package com.example.taskdoday;
 
 import android.app.ActionBar;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -11,11 +15,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class SettingsActivity extends AppCompatActivity {
     private String millicode;
@@ -23,6 +31,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Integer theme;
     private String primaryColor;
     private String accentColor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +41,38 @@ public class SettingsActivity extends AppCompatActivity {
         dbHelper = new FeedReaderDbHelper(getApplicationContext());
         themeRead();
 
-
+        Switch daily = findViewById(R.id.daily);
+        final RelativeLayout dailyrl = findViewById(R.id.timezone1);
+        if(daily.isChecked()){
+            dailyrl.setVisibility(View.VISIBLE);
+        }
+        Switch rollover = findViewById(R.id.rollovertask);
+        final RelativeLayout rolloverrl = findViewById(R.id.timezone2);
+        if(rollover.isChecked()){
+            rolloverrl.setVisibility(View.VISIBLE);
+        }
+        daily.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    SlideAnimationUtil.slideInFromTopActual(getApplicationContext(), findViewById(R.id.timezone1));
+                    dailyrl.setVisibility(View.VISIBLE);
+                } else {
+                    SlideAnimationUtil.slideInToTopActual(getApplicationContext(), findViewById(R.id.timezone1));
+                    dailyrl.setVisibility(View.GONE);
+                }
+            }
+        });
+        rollover.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    SlideAnimationUtil.slideInFromTopActual(getApplicationContext(), findViewById(R.id.timezone2));
+                    rolloverrl.setVisibility(View.VISIBLE);
+                } else {
+                    SlideAnimationUtil.slideInToTopActual(getApplicationContext(), findViewById(R.id.timezone2));
+                    rolloverrl.setVisibility(View.GONE);
+                }
+            }
+        });
     }
     private void setTheme(Boolean set){
         if(theme == 0){
@@ -172,5 +212,66 @@ public class SettingsActivity extends AppCompatActivity {
         setTheme(false);
 
     }
+
+    public void notificationSetup(){
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                BaseColumns._ID,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_DATE,
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " = ?";
+        //String[] selectionArgs = { "My Title" };
+
+        String[] selectionArgs = {"-1"};
+        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
+
+
+
+        Cursor cursor = db.query(
+                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
+                projection,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                sortOrder               // The sort order
+        );
+        String time = new String();
+        while(cursor.moveToNext()) {
+            time = cursor.getString(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE));
+
+
+        }
+        cursor.close();
+        db.close();
+        String[] timespit = time.split(":");
+        int hour = Integer.parseInt(timespit[0]);
+        int minute = Integer.parseInt(timespit[1]);
+        Calendar tempcal = Calendar.getInstance();
+        tempcal.set(Calendar.HOUR,hour);
+        tempcal.set(Calendar.MINUTE,minute);
+
+
+        //prefs.edit().putBoolean("remindertime", false).apply();
+
+        Intent notifyIntent = new Intent(this,MyReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        //Long milli = 1000 * 60 * 60 * 24L;
+        Long milli = 1000 * 60L;
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
+                milli , pendingIntent);
+
+    }
+
 
 }
