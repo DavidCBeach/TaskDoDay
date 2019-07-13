@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,24 +34,39 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     }
-    private void setTheme(){
+    private void setTheme(Boolean set){
         if(theme == 0){
-            setTheme( R.style.AppTheme);
+            //setTheme( R.style.AppTheme);
             primaryColor="#008577";
             accentColor="#D81B60";
-            Update("1",0);
+
+            if(!set) {
+                Update("1",0);
+                Toast.makeText(getApplicationContext(), "Watermelon Theme Set", Toast.LENGTH_LONG).show();
+            }
         } else if(theme == 1){
-            setTheme( R.style.AppTheme2);
+            //setTheme( R.style.AppTheme2);
             primaryColor="#F5E2E2";
             accentColor="#FF9696";
-            Update("1",1);
+
+                if(!set) {
+                    Update("1",1);
+                    Toast.makeText(getApplicationContext(), "Light Theme Set", Toast.LENGTH_LONG).show();
+                }
         } else {
-            setTheme( R.style.AppTheme3);
+            //setTheme( R.style.AppTheme3);
             primaryColor="#313131";
             accentColor="#FFC800";
             Update("1",2);
+                    if(!set) {
+                        Update("1",2);
+                        Toast.makeText(getApplicationContext(), "Dark Theme Set", Toast.LENGTH_LONG).show();
+                    }
+
         }
-        setContentView(R.layout.activity_settings);
+        if(set){
+            setContentView(R.layout.activity_settings);
+        }
         CheckBox theme1 = findViewById(R.id.theme1);
         CheckBox theme2 = findViewById(R.id.theme2);
         CheckBox theme3 = findViewById(R.id.theme3);
@@ -63,13 +79,12 @@ public class SettingsActivity extends AppCompatActivity {
             theme1.setChecked(false);
             theme2.setChecked(true);
             theme3.setChecked(false);
-
         } else {
             theme1.setChecked(false);
             theme2.setChecked(false);
             theme3.setChecked(true);
-
         }
+
 
 
     }
@@ -131,13 +146,14 @@ public class SettingsActivity extends AppCompatActivity {
         }
         cursor.close();
         db.close();
-        setTheme();
+        setTheme(true);
+
     }
 
     public void theme1click(View view) {
         theme = 0;
 
-        setTheme();
+        setTheme(false);
 
     }
 
@@ -145,7 +161,7 @@ public class SettingsActivity extends AppCompatActivity {
     public void theme2click(View view) {
         theme = 1;
 
-        setTheme();
+        setTheme(false);
 
     }
 
@@ -153,7 +169,7 @@ public class SettingsActivity extends AppCompatActivity {
     public void theme3click(View view) {
         theme = 2;
 
-        setTheme();
+        setTheme(false);
 
     }
 

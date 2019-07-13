@@ -2,11 +2,14 @@ package com.example.taskdoday;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.provider.BaseColumns;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.CompoundButtonCompat;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,6 +36,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
     private boolean mIsOld;
     private boolean mDeleteMode;
     private ArrayList<String> deletables;
+    private boolean mDarkMode;
 
 
 
@@ -45,18 +49,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         public RelativeLayout parentView;
         public CheckBox checkView;
         public CheckBox deletecheckView;
+        public View divider;
         public MyViewHolder(View v) {
             super(v);
             textView = v.findViewById(R.id.content);
             parentView = v.findViewById(R.id.taskLayout);
             checkView = v.findViewById(R.id.check);
             deletecheckView = v.findViewById(R.id.deletecheck);
+            divider = v.findViewById(R.id.divider);
 
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(Context context, ArrayList<String> myDataset, ArrayList<Boolean> myStatus, ArrayList<String> myID,boolean isOld, boolean deleteMode) {
+    public MyAdapter(Context context, ArrayList<String> myDataset, ArrayList<Boolean> myStatus, ArrayList<String> myID,boolean isOld, boolean deleteMode,boolean darkmode) {
         mDataset = myDataset;
         mStatus = myStatus;
         mID = myID;
@@ -64,6 +70,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         mIsOld = isOld;
         mDeleteMode = deleteMode;
         deletables = new ArrayList<>();
+        mDarkMode = darkmode;
 
     }
 
@@ -81,7 +88,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         mPosition = position;
-        Log.d(TAG, "taco");
+
+        String textColor = "#5A5A5A";
+        String  textColorAlt = "#DFDFDF";
+        if(mDarkMode){
+            textColorAlt = "#5A5A5A";
+            textColor = "#DFDFDF";
+            ColorStateList darkStateList = ContextCompat.getColorStateList(mContext, R.color.colorDarkAccent);
+            CompoundButtonCompat.setButtonTintList(holder.checkView, darkStateList);
+            holder.divider.setBackgroundColor(Color.parseColor("#707070"));
+        }
         holder.checkView.setText(mDataset.get(position));
         if(!mDeleteMode){
             holder.deletecheckView.setVisibility(View.GONE);
@@ -89,12 +105,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
 
         if(mStatus.get(position)){
             holder.checkView.setChecked(true);
-            holder.checkView.setTextColor(Color.parseColor("#DFDFDF"));
+            holder.checkView.setTextColor(Color.parseColor(textColorAlt));
             holder.checkView.setPaintFlags(holder.checkView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         } else {
             holder.checkView.setChecked(false);
             holder.checkView.setPaintFlags( holder.checkView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
-            holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
+            holder.checkView.setTextColor(Color.parseColor(textColor));
 
         }
         if(!mIsOld){
@@ -104,20 +120,33 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                         holder.checkView.setChecked(false);
                         Update(mID.get(position), 0);
                         mStatus.set(position,false);
-                        holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
+                        if(mDarkMode){
+                            holder.checkView.setTextColor(Color.parseColor("#DFDFDF"));
+                        }
+                        else {
+                            holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
+                        }
+
                         holder.checkView.setPaintFlags( holder.textView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
 
                     } else {
                         holder.checkView.setChecked(true);
                         Update(mID.get(position), 1);
                         mStatus.set(position,true);
-                        holder.checkView.setTextColor(Color.parseColor("#DFDFDF"));
+                        if(mDarkMode){
+                            holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
+                        }
+                        else {
+                            holder.checkView.setTextColor(Color.parseColor("#DFDFDF"));
+                        }
+
                         holder.checkView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     }
                 }
             });
             holder.deletecheckView.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View view){
+
                     if(deletables.isEmpty()){
                         holder.deletecheckView.setChecked(true);
                         deletables.add(mID.get(position));
@@ -132,8 +161,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                     } else {
                         holder.deletecheckView.setChecked(false);
                         deletables.remove(deletables.indexOf(mID.get(position)));
-                        holder.parentView.setBackgroundColor(Color.parseColor("#ffffff"));
-                        holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
+                        if(mDarkMode){
+                            holder.parentView.setBackgroundColor(Color.parseColor("#313131"));
+                            holder.checkView.setTextColor(Color.parseColor("#DFDFDF"));
+                        } else {
+                            holder.parentView.setBackgroundColor(Color.parseColor("#ffffff"));
+                            holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
+                        }
                     }
                     System.out.println(deletables);
 
