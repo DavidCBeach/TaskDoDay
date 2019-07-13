@@ -11,9 +11,11 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
 
+import android.provider.Settings;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.NotificationCompat;
@@ -89,10 +91,11 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
         if (prefs.getBoolean("firstrun", true)) {
             // Do first run stuff here then set 'firstrun' as false
-            setInit();
+
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
         }
+        setInit();
         themeRead();
 
         // Gets the data repository in write mode
@@ -178,9 +181,11 @@ public class MainActivity extends AppCompatActivity {
         int hour = Integer.parseInt(timespit[0]);
         int minute = Integer.parseInt(timespit[1]);
         Calendar tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR,hour);
-        tempcal.set(Calendar.MINUTE,minute);
-
+        //tempcal.set(Calendar.HOUR,hour);
+        //tempcal.set(Calendar.MINUTE,minute);
+        //tempcal.add(Calendar.DAY_OF_MONTH,-1);
+        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDD3");
+        System.out.println(tempcal.getTime());
 
         Intent notifyIntent = new Intent(this,MyReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast
@@ -188,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
         //Long milli = 1000 * 60 * 60 * 24L;
-        Long milli = 1000 * 60L;
+        Long milli = 1000 * 10L;
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
                milli , pendingIntent);
 
@@ -621,6 +626,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setInit(){
+
+
+
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
@@ -643,11 +652,12 @@ public class MainActivity extends AppCompatActivity {
         values = new ContentValues();
         mdformat = new SimpleDateFormat("HH:mm");
         tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR, 2);
-        tempcal.set(Calendar.MINUTE, 0);
+        //tempcal.set(Calendar.HOUR, 15);
+        //tempcal.set(Calendar.MINUTE, 18);
+        tempcal.add(Calendar.MINUTE, 1);
         System.out.println(tempcal.getTime());
         strDate =  mdformat.format(tempcal.getTime());
-        System.out.println(mdformat.format(tempcal.getTime()));
+        System.out.println(strDate);
         date = strDate;
         status = -1;
         content = "reminder";
@@ -660,8 +670,9 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
         db.close();
 
-        notificationSetup();
+
         createNotificationChannel();
+        notificationSetup();
     }
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -670,7 +681,7 @@ public class MainActivity extends AppCompatActivity {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("1", name, importance);
+            NotificationChannel channel = new NotificationChannel("1338", name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this

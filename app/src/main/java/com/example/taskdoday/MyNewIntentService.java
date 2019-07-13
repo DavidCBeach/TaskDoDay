@@ -2,10 +2,14 @@ package com.example.taskdoday;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.provider.BaseColumns;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -25,36 +29,15 @@ public class MyNewIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Read();
-
-        String content = "You have " + mContents.size() + " unfinished task to complete today";
 
 
+        startForeground(1338,buildForegroundNotification());
 
+        ForegroundNotification();
 
+        stopForeground(true);
+        //notificationManager.notify(1, builder.build());
 
-        System.out.println("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-        Calendar temp =  Calendar.getInstance();
-        System.out.println(temp.getTime());
-        Intent intente = new Intent(this, MainActivity.class);
-        intente.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intente, 0);
-
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1")
-                .setSmallIcon(R.drawable.ic_check_box_black_24dp)
-                .setContentTitle("Daily Reminder")
-                .setContentText(content)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(allcontent))
-                .setContentIntent(pendingIntent)
-                .setWhen(temp.getTimeInMillis())
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(1, builder.build());
     }
     private void Read(){
         FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(getApplicationContext());
@@ -108,5 +91,64 @@ public class MyNewIntentService extends IntentService {
         db.close();
 
 
+    }
+    private void ForegroundNotification() {
+        Read();
+
+        String content = "You have " + mContents.size() + " unfinished task to complete today";
+
+
+
+
+
+        System.out.println("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+        Calendar temp =  Calendar.getInstance();
+        System.out.println(temp.getTime());
+        Intent intente = new Intent(this, MainActivity.class);
+        intente.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intente, 0);
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1")
+                .setSmallIcon(R.drawable.ic_check_box_black_24dp)
+                .setContentTitle("Daily Reminder")
+                .setContentText(content)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(allcontent))
+                .setContentIntent(pendingIntent)
+                .setWhen(temp.getTimeInMillis())
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+            NotificationManager mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel("3", "NOTIFICATION_CHANNEL_NAME", importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            assert mNotificationManager != null;
+            builder.setChannelId("1338");
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+        Notification notification = builder.build();
+        notificationManager.notify(1, builder.build());
+
+    }
+    private Notification buildForegroundNotification() {
+        NotificationCompat.Builder b=new NotificationCompat.Builder(this);
+
+        b.setOngoing(true)
+                .setContentTitle("title")
+                .setContentText("filename")
+                .setSmallIcon(android.R.drawable.checkbox_on_background)
+                .setTicker("filename");
+
+        return(b.build());
     }
 }
