@@ -113,10 +113,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
             holder.checkView.setTextColor(Color.parseColor(textColor));
 
         }
-        if(!mIsOld){
+
             holder.checkView.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View view){
                     if(mStatus.get(position)){
+                        if(mIsOld){
+                            holder.checkView.setChecked(true);
+                            return;
+                        }
                         holder.checkView.setChecked(false);
                         Update(mID.get(position), 0);
                         mStatus.set(position,false);
@@ -130,6 +134,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                         holder.checkView.setPaintFlags( holder.textView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
 
                     } else {
+                        if(mIsOld){
+                            holder.checkView.setChecked(false);
+                            return;
+                        }
                         holder.checkView.setChecked(true);
                         Update(mID.get(position), 1);
                         mStatus.set(position,true);
@@ -173,7 +181,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
 
                 }
             });
-        }
+
 
 
     }
