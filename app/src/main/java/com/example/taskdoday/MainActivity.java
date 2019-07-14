@@ -91,11 +91,11 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
         if (prefs.getBoolean("firstrun", true)) {
             // Do first run stuff here then set 'firstrun' as false
-
+            setInit();
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
         }
-        setInit();
+
         themeRead();
 
         // Gets the data repository in write mode
@@ -132,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
         setDate();
         refreshTasks();
         setSwipes();
+        createNotificationChannel();
+        notificationSetup();
 
 
 
@@ -181,9 +183,9 @@ public class MainActivity extends AppCompatActivity {
         int hour = Integer.parseInt(timespit[0]);
         int minute = Integer.parseInt(timespit[1]);
         Calendar tempcal = Calendar.getInstance();
-        //tempcal.set(Calendar.HOUR,hour);
-        //tempcal.set(Calendar.MINUTE,minute);
-        //tempcal.add(Calendar.DAY_OF_MONTH,-1);
+        tempcal.set(Calendar.HOUR,hour);
+        tempcal.set(Calendar.MINUTE,minute);
+        tempcal.add(Calendar.DAY_OF_MONTH,-1);
         System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDD3");
         System.out.println(tempcal.getTime());
 
@@ -192,8 +194,10 @@ public class MainActivity extends AppCompatActivity {
                 (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
+        //once a day
         //Long milli = 1000 * 60 * 60 * 24L;
-        Long milli = 1000 * 10L;
+        //once every 10 minutes
+        Long milli = 1000 * 60 * 10L;
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
                milli , pendingIntent);
 
@@ -652,8 +656,8 @@ public class MainActivity extends AppCompatActivity {
         values = new ContentValues();
         mdformat = new SimpleDateFormat("HH:mm");
         tempcal = Calendar.getInstance();
-        //tempcal.set(Calendar.HOUR, 15);
-        //tempcal.set(Calendar.MINUTE, 18);
+        tempcal.set(Calendar.HOUR, 18);
+        tempcal.set(Calendar.MINUTE, 18);
         tempcal.add(Calendar.MINUTE, 1);
         System.out.println(tempcal.getTime());
         strDate =  mdformat.format(tempcal.getTime());
@@ -671,8 +675,6 @@ public class MainActivity extends AppCompatActivity {
         db.close();
 
 
-        createNotificationChannel();
-        notificationSetup();
     }
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because

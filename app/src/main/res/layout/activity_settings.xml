@@ -252,6 +252,7 @@
             android:layout_alignParentRight="true"
             android:gravity="right"
             android:layout_marginRight="20dp"
+            android:onClick="openTime"
 
             >
             <TextView

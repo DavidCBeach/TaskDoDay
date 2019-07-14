@@ -22,7 +22,7 @@ import java.util.Calendar;
 public class MyNewIntentService extends IntentService {
     private static final int NOTIFICATION_ID = 3;
     private String allcontent;
-    private ArrayList<Boolean> mContents;
+    private ArrayList<String> mContents;
     public MyNewIntentService() {
         super("MyNewIntentService");
     }
@@ -80,7 +80,7 @@ public class MyNewIntentService extends IntentService {
             String content = cursor.getString(
                     cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
             allcontent = allcontent + content + "\n";
-            listCon.add(content);
+            mContents.add(content);
 
         }
         while(cursor.moveToNext()) {
@@ -94,7 +94,10 @@ public class MyNewIntentService extends IntentService {
     }
     private void ForegroundNotification() {
         Read();
-
+        if(mContents.isEmpty()){
+            System.out.println("No Pending Task");
+            return;
+        }
         String content = "You have " + mContents.size() + " unfinished task to complete today";
 
 
