@@ -28,6 +28,7 @@
             android:name=".MyNewIntentService"
             android:exported="false" >
         </service>
+
     </application>
 
 </manifest>

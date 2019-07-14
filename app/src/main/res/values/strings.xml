@@ -42,4 +42,5 @@
     <string name="restartnotif">Setting a new theme will require restarting the app to apply</string>
     <string name="channel_name">taskdodaychannel</string>
     <string name="channel_description">for reminders</string>
+    <string name="set">Set</string>
 </resources>

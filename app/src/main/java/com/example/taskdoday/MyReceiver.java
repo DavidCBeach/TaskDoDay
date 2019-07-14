@@ -12,6 +12,9 @@ public class MyReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Intent intent1 = new Intent(context, MyNewIntentService.class);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            context.startForegroundService(intent1);
+        }
         context.startService(intent1);
     }
 }
