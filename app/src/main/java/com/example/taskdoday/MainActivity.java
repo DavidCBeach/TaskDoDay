@@ -197,7 +197,9 @@ public class MainActivity extends AppCompatActivity {
         //once a day
         //Long milli = 1000 * 60 * 60 * 24L;
         //once every 10 minutes
-        Long milli = 1000 * 60 * 10L;
+        //Long milli = 1000 * 60 * 10L;
+        //once an hour
+        Long milli = 1000 * 60 * 60L;
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
                milli , pendingIntent);
 
