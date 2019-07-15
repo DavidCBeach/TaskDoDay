@@ -86,11 +86,11 @@ public class SettingsActivity extends AppCompatActivity {
         rollover.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    SlideAnimationUtil.slideInFromTopActual(getApplicationContext(), findViewById(R.id.timezone2));
-                    rolloverrl.setVisibility(View.VISIBLE);
+//                    SlideAnimationUtil.slideInFromTopActual(getApplicationContext(), findViewById(R.id.timezone2));
+//                    rolloverrl.setVisibility(View.VISIBLE);
                 } else {
-                    SlideAnimationUtil.slideInToTopActual(getApplicationContext(), findViewById(R.id.timezone2));
-                    rolloverrl.setVisibility(View.GONE);
+//                    SlideAnimationUtil.slideInToTopActual(getApplicationContext(), findViewById(R.id.timezone2));
+//                    rolloverrl.setVisibility(View.GONE);
                 }
             }
         });
