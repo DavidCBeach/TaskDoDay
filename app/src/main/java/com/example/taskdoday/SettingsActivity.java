@@ -36,8 +36,9 @@ public class SettingsActivity extends AppCompatActivity {
     private Integer theme;
     private String primaryColor;
     private String accentColor;
-    private int hours;
-    private int minutes;
+    private int mHours;
+    private int mMinutes;
+    private String contents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,11 @@ public class SettingsActivity extends AppCompatActivity {
 
         Switch daily = findViewById(R.id.daily);
         final RelativeLayout dailyrl = findViewById(R.id.timezone1);
+        if(notifIsReminder()){
+            daily.setChecked(true);
+        } else {
+            daily.setChecked(false);
+        }
         if(daily.isChecked()){
             dailyrl.setVisibility(View.VISIBLE);
             getNotif();
@@ -64,10 +70,16 @@ public class SettingsActivity extends AppCompatActivity {
                 if (isChecked) {
                     SlideAnimationUtil.slideInFromTopActual(getApplicationContext(), findViewById(R.id.timezone1));
                     dailyrl.setVisibility(View.VISIBLE);
+                    contents = "reminder";
+
+                    notifUpdate(mHours, mMinutes,contents);
                     getNotif();
                 } else {
                     SlideAnimationUtil.slideInToTopActual(getApplicationContext(), findViewById(R.id.timezone1));
                     dailyrl.setVisibility(View.GONE);
+                    contents = "forgetter";
+                    notifUpdate(mHours,mMinutes,contents);
+                    stopNotif();
                 }
             }
         });
@@ -101,15 +113,22 @@ public class SettingsActivity extends AppCompatActivity {
                 TextView renumber2 = findViewById(R.id.renumber2);
                 TextView reampm = findViewById(R.id.reampm);
                 String hour = renumber1.getText().toString();
+                if(reampm.getText().toString().equals("am") && renumber1.getText().toString().equals("12"))
+                {
+                    hour = "0";
+                }
                 String minute = renumber2.getText().toString();
                 int ihour = Integer.parseInt(hour);
                 int iminute = Integer.parseInt(minute);
+                System.out.println(reampm.getText().toString());
+                System.out.println(ihour);
                 if(reampm.getText().toString().equals("pm")){
-                    ihour = ihour + 12;
+                    ihour+=12;
                 }
-                hours = ihour;
-                minutes = iminute;
-                setNotif();
+                mHours = ihour;
+                mMinutes = iminute;
+                setNotif(ihour,iminute);
+                notifUpdate(ihour,iminute, contents);
 
 
 
@@ -119,6 +138,45 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     }
+
+    private boolean notifIsReminder() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                BaseColumns._ID,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT
+        };
+
+
+        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " = ?";
+
+        String[] selectionArgs = {"-1"};
+        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
+
+
+
+        Cursor cursor = db.query(
+                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
+                projection,             // The array of columns to return (pass null to get all)
+                selection,              // The columns for the WHERE clause
+                selectionArgs,          // The values for the WHERE clause
+                null,                   // don't group the rows
+                null,                   // don't filter by row groups
+                sortOrder               // The sort order
+        );
+        while(cursor.moveToNext()) {
+            contents = cursor.getString(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
+            System.out.println(contents);
+        }
+        cursor.close();
+        db.close();
+        if(contents.equals("reminder")){
+            return true;
+        }
+        return false;
+    }
+
     private void setTheme(Boolean set){
         if(theme == 0){
             //setTheme( R.style.AppTheme);
@@ -194,6 +252,34 @@ public class SettingsActivity extends AppCompatActivity {
                 selectionArgs);
 
     }
+    private void notifUpdate(int hour, int minute, String content) {
+        TextView reampm = findViewById(R.id.reampm);
+        System.out.println("notifUpdate  " + reampm.getText().toString());
+
+
+        String date = Integer.toString(hour) + ":" + Integer.toString(minute);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+
+        // New value for one column
+
+        ContentValues values = new ContentValues();
+
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT, content);
+        System.out.println(content);
+
+        // Which row to update, based on the title
+        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " LIKE ?";
+        String[] selectionArgs = { "-1" };
+
+        int count = db.update(
+                FeedReaderContract.FeedEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+    }
     private void themeRead(){
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -258,103 +344,44 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-    public void notificationSetup(){
 
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_DATE,
-        };
-
-        // Filter results WHERE "title" = 'My Title'
-        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " = ?";
-        //String[] selectionArgs = { "My Title" };
-
-        String[] selectionArgs = {"-1"};
-        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
-
-
-
-        Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
-        );
-        String time = new String();
-        while(cursor.moveToNext()) {
-            time = cursor.getString(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE));
-
-
-        }
-        cursor.close();
-        db.close();
-        String[] timespit = time.split(":");
-        int hour = Integer.parseInt(timespit[0]);
-        int minute = Integer.parseInt(timespit[1]);
+    private void setNotif(int hour, int minute){
+        TextView reampm = findViewById(R.id.reampm);
+        System.out.println("setNotif  " + reampm.getText().toString());
         Calendar tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR,hour);
-        tempcal.set(Calendar.MINUTE,minute);
-
-
-        //prefs.edit().putBoolean("remindertime", false).apply();
-
-        Intent notifyIntent = new Intent(this,MyReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast
-                (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
-        //Long milli = 1000 * 60 * 60 * 24L;
-        Long milli = 1000 * 60L;
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
-                milli , pendingIntent);
-
-    }
-    private void setNotif(){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Long millicode = Long.getLong("4718552490997L");
-        ContentValues values = new ContentValues();
-        SimpleDateFormat mdformat = new SimpleDateFormat("HH:mm");
-        Calendar tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR, hours);
-        tempcal.set(Calendar.MINUTE, minutes);
+        System.out.println(hour);
+        tempcal.set(Calendar.HOUR, hour+12);
+        tempcal.set(Calendar.MINUTE, minute);
         System.out.println(tempcal.getTime());
-        String strDate =  mdformat.format(tempcal.getTime());
-        System.out.println(strDate);
-        String date = strDate;
-        int status = -1;
-        String content = "reminder";
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, millicode );
-// Insert the new row, returning the primary key value of the new row
-        Long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
-        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
-        db.close();
-        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDD3");
+        tempcal.add(Calendar.DAY_OF_MONTH, -1);
         System.out.println(tempcal.getTime());
-
+        System.out.println("setNotif");
+        System.out.println(tempcal.getTime());
         Intent notifyIntent = new Intent(this,MyReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast
                 (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
         //once a day
-        //Long milli = 1000 * 60 * 60 * 24L;
+        Long milli = 1000 * 60 * 60 * 24L;
         //once every 10 minutes
         //Long milli = 1000 * 60 * 10L;
         //once an hour
-        Long milli = 1000 * 60 * 60L;
+        //Long milli = 1000 * 60 * 60L;
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
                 milli , pendingIntent);
+
+
+    }
+    private void stopNotif(){
+        Calendar tempcal = Calendar.getInstance();
+        tempcal.set(Calendar.HOUR, mHours);
+        tempcal.set(Calendar.MINUTE, mMinutes);
+        Intent notifyIntent = new Intent(this,MyReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
     }
     private void getNotif(){
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -362,6 +389,7 @@ public class SettingsActivity extends AppCompatActivity {
         String[] projection = {
                 BaseColumns._ID,
                 FeedReaderContract.FeedEntry.COLUMN_NAME_DATE,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT
         };
 
 
@@ -385,25 +413,37 @@ public class SettingsActivity extends AppCompatActivity {
         while(cursor.moveToNext()) {
             time = cursor.getString(
                     cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE));
+            contents = cursor.getString(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
+
 
 
         }
         cursor.close();
         db.close();
         String[] timespit = time.split(":");
-        hours = Integer.parseInt(timespit[0]);
-        minutes = Integer.parseInt(timespit[1]);
+        mHours = Integer.parseInt(timespit[0]);
+        mMinutes = Integer.parseInt(timespit[1]);
         TextView renumber1 = findViewById(R.id.renumber1);
         TextView renumber2 = findViewById(R.id.renumber2);
         TextView reampm = findViewById(R.id.reampm);
-        int hoursactual = hours%12;
+        int hoursactual = mHours%12;
         System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-        System.out.println(hours);
+        System.out.println(mHours);
         System.out.println(hoursactual);
-        System.out.println(minutes);
-        renumber1.setText(Integer.toString(hoursactual));
-        renumber2.setText(Integer.toString(minutes));
-        if(hours > 12){
+        System.out.println(mMinutes);
+        if(hoursactual==0){
+            renumber1.setText("12");
+        } else {
+            renumber1.setText(Integer.toString(hoursactual));
+        }
+        if(mMinutes < 10){
+            renumber2.setText("0" + Integer.toString(mMinutes));
+        } else {
+            renumber2.setText(Integer.toString(mMinutes));
+        }
+
+        if(mHours >= 12){
             reampm.setText("pm");
         } else {
             reampm.setText("am");
@@ -415,8 +455,10 @@ public class SettingsActivity extends AppCompatActivity {
     public void openTime(View view) {
         DialogFragment newFragment = new TimePickerFragment();
         setTheme(R.style.AppTheme2a);
-        ((TimePickerFragment) newFragment).setArguements(hours, minutes);
+        ((TimePickerFragment) newFragment).setArguements(mHours, mMinutes);
         newFragment.show(getSupportFragmentManager(), "timePicker");
 
     }
+
+
 }
