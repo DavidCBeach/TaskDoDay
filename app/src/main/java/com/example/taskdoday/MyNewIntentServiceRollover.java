@@ -85,7 +85,7 @@ public class MyNewIntentServiceRollover extends IntentService {
         if(mContents.isEmpty()){
             return;
         }
-        
+
 
         cursor.close();
         db.close();
