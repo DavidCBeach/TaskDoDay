@@ -690,7 +690,6 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
         db.close();
 
-
     }
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because

@@ -88,9 +88,12 @@ public class SettingsActivity extends AppCompatActivity {
                 if (isChecked) {
 //                    SlideAnimationUtil.slideInFromTopActual(getApplicationContext(), findViewById(R.id.timezone2));
 //                    rolloverrl.setVisibility(View.VISIBLE);
+                    setRollover();
                 } else {
 //                    SlideAnimationUtil.slideInToTopActual(getApplicationContext(), findViewById(R.id.timezone2));
 //                    rolloverrl.setVisibility(View.GONE);
+                    stopRollover();
+
                 }
             }
         });
@@ -136,6 +139,47 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
 
+
+    }
+
+    private void stopRollover() {
+        Calendar tempcal = Calendar.getInstance();
+        tempcal.set(Calendar.HOUR, 23);
+        tempcal.set(Calendar.MINUTE, 55);
+        System.out.println(tempcal.getTime());
+        tempcal.add(Calendar.DAY_OF_MONTH, -1);
+        System.out.println(tempcal.getTime());
+        System.out.println("StopRollover");
+        System.out.println(tempcal.getTime());
+        Intent notifyIntent = new Intent(this,MyReceiverRollover.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (getApplicationContext(), 5, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+    }
+
+    private void setRollover() {
+        Calendar tempcal = Calendar.getInstance();
+        tempcal.set(Calendar.HOUR, 23);
+        tempcal.set(Calendar.MINUTE, 55);
+        System.out.println(tempcal.getTime());
+        tempcal.add(Calendar.DAY_OF_MONTH, -1);
+        System.out.println(tempcal.getTime());
+        System.out.println("setRollover");
+        System.out.println(tempcal.getTime());
+        Intent notifyIntent = new Intent(this,MyReceiverRollover.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast
+                (getApplicationContext(), 5, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        //once a day
+        Long milli = 1000 * 60 * 60 * 24L;
+        //once every 10 minutes
+        //Long milli = 1000 * 60 * 10L;
+        //once an hour
+        //Long milli = 1000 * 60 * 60L;
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
+                milli , pendingIntent);
 
     }
 

@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,6 +23,8 @@ public class MyNewIntentServiceRollover extends IntentService {
     private static final int NOTIFICATION_ID = 3;
     private String allcontent;
     private ArrayList<String> mContents;
+    Calendar calendar;
+    FeedReaderDbHelper dbHelper;
     public MyNewIntentServiceRollover() {
         super("MyNewIntentService");
     }
@@ -39,7 +42,7 @@ public class MyNewIntentServiceRollover extends IntentService {
 
     }
     private void Rollover(){
-        FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(getApplicationContext());
+        dbHelper = new FeedReaderDbHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
@@ -56,7 +59,7 @@ public class MyNewIntentServiceRollover extends IntentService {
         //String[] selectionArgs = { "My Title" };
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
-        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
         String strDate =  mdformat.format(calendar.getTime());
         String[] selectionArgs = {strDate, "0"};
 
@@ -72,25 +75,46 @@ public class MyNewIntentServiceRollover extends IntentService {
                 null,                   // don't filter by row groups
                 sortOrder               // The sort order
         );
-        mContents = new ArrayList<>();
-        allcontent = new String();
-        ArrayList<String> listCon = new ArrayList();
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR,0);
+        calendar.set(Calendar.MINUTE,1);
         while(cursor.moveToNext()) {
             String content = cursor.getString(
                     cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
-            allcontent = allcontent + content + "\n";
-            mContents.add(content);
-
+            rolloverWrite(content);
         }
         if(mContents.isEmpty()){
             return;
         }
-
-
         cursor.close();
         db.close();
 
 
+    }
+    private void rolloverWrite(String content) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
+        //the below 2 lines is for backlogging 1 week of task for testing purposes
+//     calendar.add(5,-7);
+//     String strDate =  mdformat.format(calendar.getTime());
+
+        Long dateMilli = calendar.getTimeInMillis();
+        String strDate =  mdformat.format(calendar.getTime());
+        String date = strDate;
+        Integer status = 0;
+        //and this line
+//              calendar.add(5,7);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
+        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, dateMilli );
+        System.out.println(calendar.getTimeInMillis());
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
+        System.out.println(newRowId);
+        db.close();
     }
 
     private Notification buildForegroundNotification() {
