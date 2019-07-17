@@ -43,4 +43,15 @@
     <string name="channel_name">taskdodaychannel</string>
     <string name="channel_description">for reminders</string>
     <string name="set">Set</string>
+    <string name="slide_1_title">TaskDoDay</string>
+    <string name="slide_1_desc">TaskDoDay makes it easy to stay on top of your busy life and allows you to maximize your productivity.</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="start">GOT IT</string>
+    <string name="slide_2_title">Add a Task</string>
+    <string name="slide_2_desc">Tap the + icon in the bottom right hand corner to begin adding tasks to the day.</string>
+    <string name="slide_3_title">Pick a Day</string>
+    <string name="slide_3_desc"> You can swipe left and right between days on the home screen or tap the waffle button to switch to a specific day.</string>
+    <string name="slide_4_title">Track Your Stats</string>
+    <string name="slide_4_desc">See the percentage of tasks you\'ve been able to complete on time by tapping on the line graph button.</string>
 </resources>

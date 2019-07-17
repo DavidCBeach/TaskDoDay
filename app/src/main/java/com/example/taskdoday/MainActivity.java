@@ -92,9 +92,11 @@ public class MainActivity extends AppCompatActivity {
         if (prefs.getBoolean("firstrun", true)) {
             // Do first run stuff here then set 'firstrun' as false
             setInit();
+            startActivity(new Intent(this, StartActivity.class));
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
         }
+
 
         themeRead();
 
