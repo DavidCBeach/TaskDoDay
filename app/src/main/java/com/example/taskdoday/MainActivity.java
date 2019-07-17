@@ -92,9 +92,11 @@ public class MainActivity extends AppCompatActivity {
         if (prefs.getBoolean("firstrun", true)) {
             // Do first run stuff here then set 'firstrun' as false
             setInit();
+            startActivity(new Intent(this, StartActivity.class));
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
         }
+
 
         themeRead();
 
@@ -151,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = {
                 BaseColumns._ID,
                 FeedReaderContract.FeedEntry.COLUMN_NAME_DATE,
+                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS
         };
 
 
@@ -171,37 +174,50 @@ public class MainActivity extends AppCompatActivity {
                 sortOrder               // The sort order
         );
         String time = new String();
+        String status = new String();
         while(cursor.moveToNext()) {
             time = cursor.getString(
                     cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE));
+            status = cursor.getString(
+                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
 
 
         }
         cursor.close();
         db.close();
-        String[] timespit = time.split(":");
-        int hour = Integer.parseInt(timespit[0]);
-        int minute = Integer.parseInt(timespit[1]);
-        Calendar tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR,hour);
-        tempcal.set(Calendar.MINUTE,minute);
-        tempcal.add(Calendar.DAY_OF_MONTH,-1);
-        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDD3");
-        System.out.println(tempcal.getTime());
+        if(status == "reminder") {
 
-        Intent notifyIntent = new Intent(this,MyReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast
-                (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
-        //once a day
-        //Long milli = 1000 * 60 * 60 * 24L;
-        //once every 10 minutes
-        //Long milli = 1000 * 60 * 10L;
-        //once an hour
-        Long milli = 1000 * 60 * 60L;
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
-               milli , pendingIntent);
+
+            String[] timespit = time.split(":");
+            int hour = Integer.parseInt(timespit[0]);
+            int minute = Integer.parseInt(timespit[1]);
+            Calendar tempcal = Calendar.getInstance();
+            tempcal.set(Calendar.HOUR, hour);
+            tempcal.set(Calendar.MINUTE, minute);
+            tempcal.add(Calendar.DAY_OF_MONTH, -1);
+            System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDD3");
+            System.out.println(tempcal.getTime());
+
+            Intent notifyIntent = new Intent(this, MyReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast
+                    (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
+            //once a day
+            Long milli = 1000 * 60 * 60 * 24L;
+            //once every 10 minutes
+            //Long milli = 1000 * 60 * 10L;
+            //once an hour
+            //Long milli = 1000 * 60 * 60L;
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, tempcal.getTimeInMillis(),
+                    milli, pendingIntent);
+        } else {
+            Intent notifyIntent = new Intent(this, MyReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast
+                    (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
+        }
 
     }
 
@@ -658,7 +674,7 @@ public class MainActivity extends AppCompatActivity {
         values = new ContentValues();
         mdformat = new SimpleDateFormat("HH:mm");
         tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR, 18);
+        tempcal.set(Calendar.HOUR, 10);
         tempcal.set(Calendar.MINUTE, 18);
         tempcal.add(Calendar.MINUTE, 1);
         System.out.println(tempcal.getTime());
@@ -675,7 +691,6 @@ public class MainActivity extends AppCompatActivity {
         newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
         System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
         db.close();
-
 
     }
     private void createNotificationChannel() {

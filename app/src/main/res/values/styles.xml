@@ -101,5 +101,9 @@
         <item name="android:textColor">@color/colorAccent</item>
         <!-- The textColor property is backward compatible with the Support Library -->
     </style>
+    <style name="NoActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 
 </resources>
