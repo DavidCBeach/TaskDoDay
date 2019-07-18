@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         if (prefs.getBoolean("firstrun", true)) {
             // Do first run stuff here then set 'firstrun' as false
             setInit();
+            notificationSetup();
             startActivity(new Intent(this, StartActivity.class));
             // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         refreshTasks();
         setSwipes();
         createNotificationChannel();
-        notificationSetup();
+
 
 
 
@@ -649,9 +650,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setInit(){
 
-
-
-
+        //TODO: switch this over to SharedPreferences
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
