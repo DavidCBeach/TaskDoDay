@@ -4,9 +4,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher_d1_white_fit_grad_light"
+        android:icon="@mipmap/ic_launcher_d1_white_fit"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_d1_white_fit_grad_light_round"
+        android:roundIcon="@mipmap/ic_launcher_d1_white_fit"
         android:supportsRtl="true"
         android:theme="@style/AppTheme2">
         <activity android:name=".SettingsActivity"></activity>
