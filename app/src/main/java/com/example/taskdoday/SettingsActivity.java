@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -24,6 +26,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
@@ -31,14 +35,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class SettingsActivity extends AppCompatActivity {
-    private String millicode;
+
     private FeedReaderDbHelper dbHelper;
     private Integer theme;
-    private String primaryColor;
-    private String accentColor;
     private int mHours;
     private int mMinutes;
-    private String contents;
+    private boolean mStatus;
+    public int shownHours;
+    public int shownMinutes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,34 +55,56 @@ public class SettingsActivity extends AppCompatActivity {
 
         Switch daily = findViewById(R.id.daily);
         final RelativeLayout dailyrl = findViewById(R.id.timezone1);
-        if(notifIsReminder()){
-            daily.setChecked(true);
-        } else {
-            daily.setChecked(false);
+        try {
+            if(notifIsReminder()){
+                daily.setChecked(true);
+            } else {
+                daily.setChecked(false);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         if(daily.isChecked()){
             dailyrl.setVisibility(View.VISIBLE);
-            getNotif();
+            try {
+                getNotif();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         Switch rollover = findViewById(R.id.rollovertask);
-        final RelativeLayout rolloverrl = findViewById(R.id.timezone2);
-        if(rollover.isChecked()){
-            rolloverrl.setVisibility(View.VISIBLE);
-        }
+        if(getRollover())
+            rollover.setChecked(true);
+        else
+            rollover.setChecked(false);
+
+        TextView version = findViewById(R.id.version);
+        version.setText("Version: "+BuildConfig.VERSION_NAME);
+
+
+
+//        final RelativeLayout rolloverrl = findViewById(R.id.timezone2);
+//        if(rollover.isChecked()){
+//            rolloverrl.setVisibility(View.VISIBLE);
+//        }
         daily.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     SlideAnimationUtil.slideInFromTopActual(getApplicationContext(), findViewById(R.id.timezone1));
                     dailyrl.setVisibility(View.VISIBLE);
-                    contents = "reminder";
+                    mStatus = true;
 
-                    notifUpdate(mHours, mMinutes,contents);
-                    getNotif();
+                    notifUpdate(mHours, mMinutes);
+                    try {
+                        getNotif();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     SlideAnimationUtil.slideInToTopActual(getApplicationContext(), findViewById(R.id.timezone1));
                     dailyrl.setVisibility(View.GONE);
-                    contents = "forgetter";
-                    notifUpdate(mHours,mMinutes,contents);
+                    mStatus = false;
+                    notifUpdate(mHours,mMinutes);
                     stopNotif();
                 }
             }
@@ -131,7 +157,7 @@ public class SettingsActivity extends AppCompatActivity {
                 mHours = ihour;
                 mMinutes = iminute;
                 setNotif(ihour,iminute);
-                notifUpdate(ihour,iminute, contents);
+                notifUpdate(ihour,iminute);
 
 
 
@@ -141,81 +167,35 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     }
+    private boolean getRollover() {
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        return prefs.getBoolean("rollover",false);
+    }
 
     private void stopRollover() {
-        Calendar tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR, 23);
-        tempcal.set(Calendar.MINUTE, 55);
-        System.out.println(tempcal.getTime());
-        tempcal.add(Calendar.DAY_OF_MONTH, -1);
-        System.out.println(tempcal.getTime());
-        System.out.println("StopRollover");
-        System.out.println(tempcal.getTime());
-        Intent notifyIntent = new Intent(this,MyReceiverRollover.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast
-                (getApplicationContext(), 5, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("rollover", false);
+        editor.commit();
+
     }
 
     private void setRollover() {
-        Calendar tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR, 23);
-        tempcal.set(Calendar.MINUTE, 55);
-        System.out.println(tempcal.getTime());
-        tempcal.add(Calendar.DAY_OF_MONTH, -1);
-        System.out.println(tempcal.getTime());
-        System.out.println("setRollover");
-        System.out.println(tempcal.getTime());
-        Intent notifyIntent = new Intent(this,MyReceiverRollover.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast
-                (getApplicationContext(), 5, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
-        //once a day
-        Long milli = 1000 * 60 * 60 * 24L;
-        //once every 10 minutes
-        //Long milli = 1000 * 60 * 10L;
-        //once an hour
-        //Long milli = 1000 * 60 * 60L;
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,  tempcal.getTimeInMillis(),
-                milli , pendingIntent);
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("rollover", true);
+        editor.commit();
+
 
     }
 
-    private boolean notifIsReminder() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+    private boolean notifIsReminder() throws JSONException {
 
-        String[] projection = {
-                BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT
-        };
-
-
-        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " = ?";
-
-        String[] selectionArgs = {"-1"};
-        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
-
-
-
-        Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
-        );
-        while(cursor.moveToNext()) {
-            contents = cursor.getString(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
-            System.out.println(contents);
-        }
-        cursor.close();
-        db.close();
-        if(contents.equals("reminder")){
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        String notification = prefs.getString("notification","");
+        JSONObject obj = new JSONObject(notification);
+        mStatus = obj.getBoolean("status");
+        if(mStatus){
             return true;
         }
         return false;
@@ -223,33 +203,22 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void setTheme(Boolean set){
         if(theme == 0){
-            //setTheme( R.style.AppTheme);
-            primaryColor="#008577";
-            accentColor="#D81B60";
-
             if(!set) {
-                Update("1",0);
+                Update(0);
                 Toast.makeText(getApplicationContext(), "Watermelon Theme Set", Toast.LENGTH_LONG).show();
             }
         } else if(theme == 1){
-            //setTheme( R.style.AppTheme2);
-            primaryColor="#F5E2E2";
-            accentColor="#FF9696";
 
                 if(!set) {
-                    Update("1",1);
+                    Update(1);
                     Toast.makeText(getApplicationContext(), "Light Theme Set", Toast.LENGTH_LONG).show();
                 }
         } else {
-            //setTheme( R.style.AppTheme3);
-            primaryColor="#313131";
-            accentColor="#FFC800";
-            Update("1",2);
+            Update(2);
                     if(!set) {
-                        Update("1",2);
+                        Update(2);
                         Toast.makeText(getApplicationContext(), "Dark Theme Set", Toast.LENGTH_LONG).show();
                     }
-
         }
         if(set){
             setContentView(R.layout.activity_settings);
@@ -275,92 +244,32 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     }
-    private void Update(String id, Integer status) {
-
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-
-        // New value for one column
-
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
-
-        // Which row to update, based on the title
-        String selection = BaseColumns._ID + " LIKE ?";
-        String[] selectionArgs = { id };
-
-        int count = db.update(
-                FeedReaderContract.FeedEntry.TABLE_NAME,
-                values,
-                selection,
-                selectionArgs);
+    private void Update( Integer theme) {
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("theme", theme);
+        editor.commit();
 
     }
-    private void notifUpdate(int hour, int minute, String content) {
-        TextView reampm = findViewById(R.id.reampm);
-        System.out.println("notifUpdate  " + reampm.getText().toString());
-
-
-        String date = Integer.toString(hour) + ":" + Integer.toString(minute);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-
-        // New value for one column
-
-        ContentValues values = new ContentValues();
-
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT, content);
-        System.out.println(content);
-
-        // Which row to update, based on the title
-        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " LIKE ?";
-        String[] selectionArgs = { "-1" };
-
-        int count = db.update(
-                FeedReaderContract.FeedEntry.TABLE_NAME,
-                values,
-                selection,
-                selectionArgs);
+    private void notifUpdate(int hour, int minute) {
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        JSONObject jo = new JSONObject();
+        try {
+            jo.put("hour",hour);
+            jo.put("minute",minute);
+            jo.put("status",mStatus);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String date = jo.toString();
+        editor.putString("notification", date);
+        editor.commit();
 
     }
     private void themeRead(){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS,
-        };
-
-        // Filter results WHERE "title" = 'My Title'
-        String selection = FeedReaderContract.FeedEntry._ID + " = ?";
-        //String[] selectionArgs = { "My Title" };
-
-        String[] selectionArgs = {"1"};
-        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
-
-
-
-        Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
-        );
-
-        while(cursor.moveToNext()) {
-            theme = cursor.getInt(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
-
-
-        }
-        cursor.close();
-        db.close();
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        theme = prefs.getInt("theme",1);
         setTheme(true);
 
     }
@@ -427,47 +336,14 @@ public class SettingsActivity extends AppCompatActivity {
         AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
     }
-    private void getNotif(){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+    private void getNotif() throws JSONException {
 
-        String[] projection = {
-                BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_DATE,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT
-        };
-
-
-        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " = ?";
-
-        String[] selectionArgs = {"-1"};
-        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
-
-
-
-        Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
-        );
-        String time = new String();
-        while(cursor.moveToNext()) {
-            time = cursor.getString(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE));
-            contents = cursor.getString(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
-
-
-
-        }
-        cursor.close();
-        db.close();
-        String[] timespit = time.split(":");
-        mHours = Integer.parseInt(timespit[0]);
-        mMinutes = Integer.parseInt(timespit[1]);
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        String notification = prefs.getString("notification","");
+        JSONObject obj = new JSONObject(notification);
+        mStatus = obj.getBoolean("status");
+        mHours = obj.getInt("hour");
+        mMinutes = obj.getInt("minute");
         TextView renumber1 = findViewById(R.id.renumber1);
         TextView renumber2 = findViewById(R.id.renumber2);
         TextView reampm = findViewById(R.id.reampm);

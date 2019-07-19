@@ -26,6 +26,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,6 +45,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private int accentColor;
     private int buttonBackColor;
     private boolean darkMode;
+    private DatabaseUtil dbUtil;
 
 
 
@@ -90,107 +95,55 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
         if (prefs.getBoolean("firstrun", true)) {
-            // Do first run stuff here then set 'firstrun' as false
             setInit();
+            try {
+                notificationSetup();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            createNotificationChannel();
             startActivity(new Intent(this, StartActivity.class));
-            // using the following line to edit/commit prefs
             prefs.edit().putBoolean("firstrun", false).apply();
         }
-
-
         themeRead();
+        dbUtil = new DatabaseUtil(getApplicationContext());
 
-        // Gets the data repository in write mode
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         myID = new ArrayList<>();
         myStatus = new ArrayList<>();
-        // specify an adapter (see also next example)
+
 
         et = findViewById(R.id.et);
-        //et.setVisibility(View.GONE);
         done = findViewById(R.id.done);
-        //done.setVisibility(View.GONE);
         bt = findViewById(R.id.addtask);
-       // bt.setVisibility(View.GONE);
+
 
         calendarDialog = new CalendarDialog();
         sortDialog = new SortDialog();
-        View old = findViewById(R.id.oldfilter);
-        //old.setVisibility(View.GONE);
-        sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
-        LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
-        //deleteinterface.setVisibility(View.GONE);
-        lastOld = 0;
 
+        sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
+
+        lastOld = 0;
 
         setDate();
         refreshTasks();
         setSwipes();
-        createNotificationChannel();
-        notificationSetup();
-
-
-
-
-
-        // Create a new map of values, where column names are the keys
-
-
 
     }
-    public void notificationSetup(){
+    public void notificationSetup() throws JSONException {
 
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        String[] projection = {
-                BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_DATE,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS
-        };
-
-
-        String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " = ?";
-
-        String[] selectionArgs = {"-1"};
-        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
-
-
-
-        Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
-        );
-        String time = new String();
-        String status = new String();
-        while(cursor.moveToNext()) {
-            time = cursor.getString(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE));
-            status = cursor.getString(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
-
-
-        }
-        cursor.close();
-        db.close();
-        if(status == "reminder") {
-
-
-            String[] timespit = time.split(":");
-            int hour = Integer.parseInt(timespit[0]);
-            int minute = Integer.parseInt(timespit[1]);
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        String notification = prefs.getString("notification","");
+        JSONObject obj = new JSONObject(notification);
+        Boolean status = obj.getBoolean("status");
+        if(status) {
+            int hour = obj.getInt("hour");
+            int minute = obj.getInt("minute");
             Calendar tempcal = Calendar.getInstance();
             tempcal.set(Calendar.HOUR, hour);
             tempcal.set(Calendar.MINUTE, minute);
@@ -273,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        // Add items to action bar
 
         if(theme == 0){
             getMenuInflater().inflate(menu_main, menu);
@@ -289,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        // Is item is selected, if so do correlated action
+
         switch(item.getItemId())
         {
             case android.R.id.home:
@@ -466,8 +418,6 @@ public class MainActivity extends AppCompatActivity {
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
         String[] projection = {
                 BaseColumns._ID,
                 FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT,
@@ -475,24 +425,21 @@ public class MainActivity extends AppCompatActivity {
                 FeedReaderContract.FeedEntry.COLUMN_NAME_DATE
         };
 
-        // Filter results WHERE "title" = 'My Title'
         String selection = FeedReaderContract.FeedEntry.COLUMN_NAME_DATE + " = ?";
-        //String[] selectionArgs = { "My Title" };
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         String strDate =  mdformat.format(calendar.getTime());
         String[] selectionArgs = {strDate};
 
-        // How you want the results sorted in the resulting Cursor
 
 
         Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
+                FeedReaderContract.FeedEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
         );
         myID = new ArrayList<>();
         myStatus = new ArrayList<>();
@@ -515,11 +462,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        while(cursor.moveToNext()) {
-
-        }
-        final TextView helloTextView = (TextView) findViewById(R.id.taskshow);
-        //helloTextView.setText(contents);
         cursor.close();
         db.close();
 
@@ -588,6 +530,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
     private void refreshTasks(){
+        rollover();
         ArrayList<String> myDataset = Read();
         if(!myDataset.isEmpty()){
             TextView notask = findViewById(R.id.notasks);
@@ -604,6 +547,32 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld(),false,darkMode);
         recyclerView.setAdapter(mAdapter);
     }
+
+    private void rollover() {
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        boolean rollover = prefs.getBoolean("rollover",false);
+        if(rollover){
+            String latestdate = prefs.getString("latestdate","");
+            Calendar tempcal = Calendar.getInstance();
+            tempcal.set(Calendar.HOUR,0);
+            tempcal.set(Calendar.MINUTE,1);
+            Log.d("Rollover Tempcal",tempcal.getTime().toString());
+            SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
+            String today =  mdformat.format(tempcal.getTime());
+            if(today.equals(latestdate)){
+                mdformat = new SimpleDateFormat("MM/dd/yyyy");
+                latestdate =  mdformat.format(tempcal.getTime());
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("latestdate", latestdate );
+                editor.commit();
+                tempcal.add(Calendar.DAY_OF_MONTH, -1);
+                dbUtil.Rollover(tempcal);
+            }
+
+        }
+
+    }
+
     private void setSwipes(){
         RelativeLayout rl = findViewById(R.id.base);
         rl.setOnTouchListener(new OnSwipeTouchListener(getApplicationContext()) {
@@ -648,65 +617,46 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setInit(){
+        //Setting initial theme settings to preferences
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("theme", 1);
+        editor.commit();
 
-
-
-
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
+        //Setting initial notification settings to preferences
+        JSONObject jo = new JSONObject();
         Calendar tempcal = Calendar.getInstance();
-        tempcal.setTimeInMillis(4718552490997L);
-        String strDate =  mdformat.format(tempcal.getTime());
-        String date = strDate;
-        Integer status = 1;
-        String content = "start";
-        Long millicode = Long.getLong("4718552490997L");
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, millicode );
+        tempcal.set(Calendar.HOUR,5);
+        tempcal.set(Calendar.MINUTE, 17);
+        tempcal.add(Calendar.DAY_OF_MONTH, -1);
+        SimpleDateFormat mdformat = new SimpleDateFormat("HH");
+        String hour =  mdformat.format(tempcal.getTime());
+        int ihour = Integer.parseInt(hour);
+        mdformat = new SimpleDateFormat("mm");
+        String minute =  mdformat.format(tempcal.getTime());
+        int iminute = Integer.parseInt(minute);
 
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
-        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
-
-        values = new ContentValues();
-        mdformat = new SimpleDateFormat("HH:mm");
-        tempcal = Calendar.getInstance();
-        tempcal.set(Calendar.HOUR, 10);
-        tempcal.set(Calendar.MINUTE, 18);
-        tempcal.add(Calendar.MINUTE, 1);
-        System.out.println(tempcal.getTime());
-        strDate =  mdformat.format(tempcal.getTime());
-        System.out.println(strDate);
-        date = strDate;
-        status = -1;
-        content = "reminder";
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, millicode );
-// Insert the new row, returning the primary key value of the new row
-        newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
-        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDD"+newRowId);
-        db.close();
-
-    }
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("1338", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+        try {
+            jo.put("hour",ihour);
+            jo.put("minute",iminute);
+            jo.put("status",true);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        String date = jo.toString();
+        Log.d("date for notifications",date);
+        editor.putString("notification", date);
+        editor.commit();
+
+        //setting initial rollover state
+        editor.putBoolean("rollover", false);
+        editor.commit();
+        tempcal = Calendar.getInstance();
+        mdformat = new SimpleDateFormat("MM/dd/yyyy");
+        String latestdate =  mdformat.format(tempcal.getTime());
+        editor.putString("latestdate", latestdate );
+        editor.commit();
+
     }
 
     private void setTheme(){
@@ -727,12 +677,7 @@ public class MainActivity extends AppCompatActivity {
             buttonBackColor =R.color.colorDarkPrimary;
             primaryColor=R.color.white;
             accentColor=R.color.colorDarkAccent;
-
-
             darkMode = true;
-
-
-
         }
 
         setContentView(R.layout.activity_main);
@@ -754,42 +699,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void themeRead(){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS,
-        };
-
-        // Filter results WHERE "title" = 'My Title'
-        String selection = FeedReaderContract.FeedEntry._ID + " = ?";
-        //String[] selectionArgs = { "My Title" };
-
-        String[] selectionArgs = {"1"};
-        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
-
-
-
-        Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
-        );
-
-        while(cursor.moveToNext()) {
-            theme = cursor.getInt(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
-
-
-        }
-        cursor.close();
-        db.close();
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        theme = prefs.getInt("theme",1);
         setTheme();
+    }
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("1338", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
