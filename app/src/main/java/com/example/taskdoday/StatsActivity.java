@@ -1,5 +1,6 @@
 package com.example.taskdoday;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
@@ -145,42 +146,8 @@ public class StatsActivity extends AppCompatActivity {
 
     }
     private void themeRead(){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                BaseColumns._ID,
-                FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS,
-        };
-
-        // Filter results WHERE "title" = 'My Title'
-        String selection = FeedReaderContract.FeedEntry._ID + " = ?";
-        //String[] selectionArgs = { "My Title" };
-
-        String[] selectionArgs = {"1"};
-        String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC";
-
-
-
-        Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,   // The table to query
-                projection,             // The array of columns to return (pass null to get all)
-                selection,              // The columns for the WHERE clause
-                selectionArgs,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                sortOrder               // The sort order
-        );
-
-        while(cursor.moveToNext()) {
-            theme = cursor.getInt(
-                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS));
-
-
-        }
-        cursor.close();
-        db.close();
+        SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
+        theme = prefs.getInt("theme",1);
         setTheme();
     }
 }
