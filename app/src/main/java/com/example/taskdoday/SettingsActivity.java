@@ -149,8 +149,6 @@ public class SettingsActivity extends AppCompatActivity {
                 String minute = renumber2.getText().toString();
                 int ihour = Integer.parseInt(hour);
                 int iminute = Integer.parseInt(minute);
-                System.out.println(reampm.getText().toString());
-                System.out.println(ihour);
                 if(reampm.getText().toString().equals("pm") && ihour != 12){
                     ihour+=12;
                 }
@@ -354,10 +352,6 @@ public class SettingsActivity extends AppCompatActivity {
         TextView renumber2 = findViewById(R.id.renumber2);
         TextView reampm = findViewById(R.id.reampm);
         int hoursactual = mHours%12;
-        System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-        System.out.println(mHours);
-        System.out.println(hoursactual);
-        System.out.println(mMinutes);
         if(hoursactual==0){
             renumber1.setText("12");
         } else {

@@ -40,17 +40,13 @@ public class StatsActivity extends AppCompatActivity {
         SimpleDateFormat mdformat = new SimpleDateFormat("MM");
         String month =  mdformat.format(calendar.getTime());
         int imonth = Integer.parseInt(month);
-        System.out.println(imonth);
         SimpleDateFormat dmdformat = new SimpleDateFormat("dd");
         String day =  dmdformat.format(calendar.getTime());
         int iday = Integer.parseInt(day);
         SimpleDateFormat ymdformat = new SimpleDateFormat("yyyy");
         String year =  ymdformat.format(calendar.getTime());
         int iyear= Integer.parseInt(year);
-        System.out.println(calendar.getTime());
         calendar.set(iyear,imonth-1,iday,0,0);
-        System.out.println(calendar.getTime());
-        System.out.println(calendar.getTimeInMillis());
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -97,12 +93,9 @@ public class StatsActivity extends AppCompatActivity {
         if(!(list0.isEmpty() && list1.isEmpty())){
             TextView nostats = findViewById(R.id.nostats);
             nostats.setVisibility(View.GONE);
-            System.out.println(list0.size());
-            System.out.println(list1.size());
 
             Double percent = Double.valueOf(list1.size())/Double.valueOf(list1.size()+list0.size()) * 1000.0;
             percent = Math.floor(percent)/10.0;
-            System.out.println(percent);
             TextView percentview = findViewById(R.id.percent);
             percentview.setText(percent.toString() + "%");
         } else {

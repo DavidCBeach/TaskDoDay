@@ -41,7 +41,6 @@ public class CalendarActivity extends AppCompatActivity {
     public void goToDate(View view) {
         ccalendar = Calendar.getInstance();
                 ccalendar.setTimeInMillis(calendar.getTimeInMillis());
-        System.out.println(calendar.getTime());
         Intent intent = new Intent(getBaseContext(), MainActivity.class);
         intent.putExtra("calendar", Long.toString(calendar.getTimeInMillis()));
         startActivity(intent);

@@ -155,8 +155,6 @@ public class MainActivity extends AppCompatActivity {
             tempcal.set(Calendar.HOUR, hour);
             tempcal.set(Calendar.MINUTE, minute);
             tempcal.add(Calendar.DAY_OF_MONTH, -1);
-            System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDD3");
-            System.out.println(tempcal.getTime());
 
             Intent notifyIntent = new Intent(this, MyReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast
@@ -188,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
             done(view);
         }
         calendar.setTimeInMillis(calendarDialog.getGcalendar().getTimeInMillis());
-        System.out.println(calendar.getTime());
 
         setDate();
         if(getIsOld()){
@@ -286,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
                         RelativeLayout notaskl = findViewById(R.id.notaskslayout);
                         notaskl.setVisibility(View.VISIBLE);
                     }
-                    System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
                     mAdapter = new MyAdapter(getApplicationContext(), myDataset, myStatus, myID, getIsOld(), true, darkMode);
                     recyclerView.setAdapter(mAdapter);
                     LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
@@ -322,8 +318,6 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < deletables.size(); i++){
             deleteList = deleteList + deletables.get(i) + ",";
         }
-        System.out.println("ZZZZZZZZZZZZZZ" + deletables);
-        System.out.println("ZZZZZZZZZZZZZZ" + deleteList.substring(0,deleteList.length()-1));
         db.execSQL("delete from "+FeedReaderContract.FeedEntry.TABLE_NAME+" where "+FeedReaderContract.FeedEntry._ID+" in ("+deleteList.substring(0,deleteList.length()-1)+")");
         db.close();
         SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.atton));
@@ -355,7 +349,6 @@ public class MainActivity extends AppCompatActivity {
             strDate = "Yesterday";
         }
         setTitle(strDate);
-        System.out.println(this.getCurrentFocus());
     }
 
     private void SwipeRight() {
@@ -494,7 +487,6 @@ public class MainActivity extends AppCompatActivity {
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, dateMilli );
-        System.out.println(calendar.getTimeInMillis());
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
@@ -549,8 +541,7 @@ public class MainActivity extends AppCompatActivity {
             notask.setVisibility(View.VISIBLE);
             RelativeLayout notaskl = findViewById(R.id.notaskslayout);
             notaskl.setVisibility(View.VISIBLE);
-        }
-        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" + myDataset);
+        };
         mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld(),false,darkMode);
         recyclerView.setAdapter(mAdapter);
     }
@@ -563,7 +554,6 @@ public class MainActivity extends AppCompatActivity {
             Calendar tempcal = Calendar.getInstance();
             tempcal.set(Calendar.HOUR,0);
             tempcal.set(Calendar.MINUTE,1);
-            Log.d("Rollover Tempcal",tempcal.getTime().toString());
             SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
             String today =  mdformat.format(tempcal.getTime());
             if(!today.equals(latestdate)){
@@ -649,7 +639,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         String date = jo.toString();
-        Log.d("date for notifications",date);
         editor.putString("notification", date);
         editor.commit();
 
