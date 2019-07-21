@@ -29,7 +29,7 @@
     <string name="theme3">Dark</string>
     <string name="daily">Daily Reminder</string>
     <string name="dailyreminder">Set a notification to go off at a specified time to remind you of your incompleted tasks</string>
-    <string name="rolloverexplanation">Set incomplete tasks to rollover to the next day at the end of day (11:55 pm). WARNING: When tasks rollover they are counted as incomplete for that day in your statistics</string>
+    <string name="rolloverexplanation">Set incomplete tasks starting today to rollover to the next day. WARNING: When tasks rollover they are counted as incomplete for that day in your statistics</string>
     <string name="rollovertimetext">Rollover Time:</string>
     <string name="ampm">PM</string>
     <string name="number2">59</string>

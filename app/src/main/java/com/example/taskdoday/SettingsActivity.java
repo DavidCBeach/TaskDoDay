@@ -151,7 +151,7 @@ public class SettingsActivity extends AppCompatActivity {
                 int iminute = Integer.parseInt(minute);
                 System.out.println(reampm.getText().toString());
                 System.out.println(ihour);
-                if(reampm.getText().toString().equals("pm")){
+                if(reampm.getText().toString().equals("pm") && ihour != 12){
                     ihour+=12;
                 }
                 mHours = ihour;
@@ -194,6 +194,7 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
         String notification = prefs.getString("notification","");
         JSONObject obj = new JSONObject(notification);
+
         mStatus = obj.getBoolean("status");
         if(mStatus){
             return true;
@@ -300,16 +301,21 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void setNotif(int hour, int minute){
         TextView reampm = findViewById(R.id.reampm);
-        System.out.println("setNotif  " + reampm.getText().toString());
         Calendar tempcal = Calendar.getInstance();
-        System.out.println(hour);
-        tempcal.set(Calendar.HOUR, hour+12);
-        tempcal.set(Calendar.MINUTE, minute);
-        System.out.println(tempcal.getTime());
+        Log.d("test",Integer.toString(hour));
+        Calendar actualTime = Calendar.getInstance();
+        SimpleDateFormat mdformat = new SimpleDateFormat("HH");
+        String hourActual =  mdformat.format(actualTime.getTime());
+        int ihourActual = Integer.valueOf(hourActual);
+        if(ihourActual > 12){
+            hour=(hour +12)%24;
+        }
+        Log.d("test",Integer.toString(hour));
+        Log.d("test",Integer.toString(minute));
         tempcal.add(Calendar.DAY_OF_MONTH, -1);
-        System.out.println(tempcal.getTime());
-        System.out.println("setNotif");
-        System.out.println(tempcal.getTime());
+        tempcal.set(Calendar.HOUR, hour);
+        tempcal.set(Calendar.MINUTE, minute);
+        Log.d("test",tempcal.getTime().toString());
         Intent notifyIntent = new Intent(this,MyReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast
                 (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
