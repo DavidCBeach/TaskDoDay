@@ -144,6 +144,13 @@ public class MainActivity extends AppCompatActivity {
         if(status) {
             int hour = obj.getInt("hour");
             int minute = obj.getInt("minute");
+            SimpleDateFormat mdformat = new SimpleDateFormat("HH");
+            Calendar actualTime = Calendar.getInstance();
+            String hourActual =  mdformat.format(actualTime.getTime());
+            int ihourActual = Integer.valueOf(hourActual);
+            if(ihourActual > 12){
+                hour=(hour +12)%24;
+            }
             Calendar tempcal = Calendar.getInstance();
             tempcal.set(Calendar.HOUR, hour);
             tempcal.set(Calendar.MINUTE, minute);
@@ -559,11 +566,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Rollover Tempcal",tempcal.getTime().toString());
             SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
             String today =  mdformat.format(tempcal.getTime());
-            if(today.equals(latestdate)){
-                mdformat = new SimpleDateFormat("MM/dd/yyyy");
-                latestdate =  mdformat.format(tempcal.getTime());
+            if(!today.equals(latestdate)){
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("latestdate", latestdate );
+                editor.putString("latestdate", today );
                 editor.commit();
                 tempcal.add(Calendar.DAY_OF_MONTH, -1);
                 dbUtil.Rollover(tempcal);
@@ -626,9 +631,9 @@ public class MainActivity extends AppCompatActivity {
         //Setting initial notification settings to preferences
         JSONObject jo = new JSONObject();
         Calendar tempcal = Calendar.getInstance();
+        tempcal.add(Calendar.DAY_OF_MONTH, -1);
         tempcal.set(Calendar.HOUR,5);
         tempcal.set(Calendar.MINUTE, 17);
-        tempcal.add(Calendar.DAY_OF_MONTH, -1);
         SimpleDateFormat mdformat = new SimpleDateFormat("HH");
         String hour =  mdformat.format(tempcal.getTime());
         int ihour = Integer.parseInt(hour);

@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.provider.BaseColumns;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -94,19 +95,14 @@ public class NotificationService extends IntentService {
     }
     private void ForegroundNotification() {
         Read();
+        Log.d("test","notifying");
         if(mContents.isEmpty()){
             System.out.println("No Pending Task");
             return;
         }
         String content = "You have " + mContents.size() + " unfinished task to complete today";
 
-
-
-
-
-        System.out.println("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
         Calendar temp =  Calendar.getInstance();
-        System.out.println(temp.getTime());
         Intent intente = new Intent(this, MainActivity.class);
         intente.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intente, 0);
@@ -139,7 +135,6 @@ public class NotificationService extends IntentService {
             builder.setChannelId("1338");
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
-        Notification notification = builder.build();
         notificationManager.notify(1, builder.build());
 
     }
