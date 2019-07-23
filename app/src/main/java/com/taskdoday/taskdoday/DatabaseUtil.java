@@ -1,48 +1,25 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
-import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.provider.BaseColumns;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MyNewIntentServiceRollover extends IntentService {
-    private static final int NOTIFICATION_ID = 3;
-    private String allcontent;
-    private ArrayList<String> mContents;
-    Calendar calendar;
-    FeedReaderDbHelper dbHelper;
-    public MyNewIntentServiceRollover() {
-        super("MyNewIntentService");
+public class DatabaseUtil {
+    private Calendar calendar;
+    private FeedReaderDbHelper dbHelper;
+    private Context mContext;
+
+    public DatabaseUtil(Context context){
+        mContext = context;
     }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
-
-
-        startForeground(1338,buildForegroundNotification());
-
-        Rollover();
-
-        stopForeground(true);
-        //notificationManager.notify(1, builder.build());
-
-    }
-    private void Rollover(){
-        dbHelper = new FeedReaderDbHelper(getApplicationContext());
+    public void Rollover(Calendar yesterday){
+        dbHelper = new FeedReaderDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
@@ -59,7 +36,7 @@ public class MyNewIntentServiceRollover extends IntentService {
         //String[] selectionArgs = { "My Title" };
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
-        calendar = Calendar.getInstance();
+        calendar = yesterday;
         String strDate =  mdformat.format(calendar.getTime());
         String[] selectionArgs = {strDate, "0"};
 
@@ -82,9 +59,6 @@ public class MyNewIntentServiceRollover extends IntentService {
             String content = cursor.getString(
                     cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
             rolloverWrite(content);
-        }
-        if(mContents.isEmpty()){
-            return;
         }
         cursor.close();
         db.close();
@@ -114,17 +88,5 @@ public class MyNewIntentServiceRollover extends IntentService {
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
         System.out.println(newRowId);
         db.close();
-    }
-
-    private Notification buildForegroundNotification() {
-        NotificationCompat.Builder b=new NotificationCompat.Builder(this);
-
-        b.setOngoing(true)
-                .setContentTitle("title")
-                .setContentText("filename")
-                .setSmallIcon(android.R.drawable.checkbox_on_background)
-                .setTicker("filename");
-
-        return(b.build());
     }
 }

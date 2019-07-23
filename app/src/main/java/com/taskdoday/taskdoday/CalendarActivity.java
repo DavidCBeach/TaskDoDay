@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

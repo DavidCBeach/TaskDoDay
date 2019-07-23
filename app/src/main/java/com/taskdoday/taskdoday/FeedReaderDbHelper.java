@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

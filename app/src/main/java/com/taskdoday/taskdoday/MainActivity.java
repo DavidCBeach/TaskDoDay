@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
@@ -56,8 +56,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import static com.example.taskdoday.R.menu.menu_main;
-import static com.example.taskdoday.R.menu.menu_main2;
+import static com.taskdoday.taskdoday.R.menu.menu_main;
+import static com.taskdoday.taskdoday.R.menu.menu_main2;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -297,8 +297,8 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-    public void cancelDelete(View view){
 
+    public void cancelDelete(View view){
         LinearLayout deleteinterface = findViewById(R.id.deleteinterface);
         deleteinterface.setVisibility(View.GONE);
         SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.atton));
@@ -520,6 +520,7 @@ public class MainActivity extends AppCompatActivity {
             refreshTasks();
         }
     }
+
     private boolean getIsOld(){
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(5,-1);
@@ -528,6 +529,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
     private void refreshTasks(){
         rollover();
         ArrayList<String> myDataset = Read();
@@ -541,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
             notask.setVisibility(View.VISIBLE);
             RelativeLayout notaskl = findViewById(R.id.notaskslayout);
             notaskl.setVisibility(View.VISIBLE);
-        };
+        }
         mAdapter = new MyAdapter(getApplicationContext(),myDataset,myStatus,myID,getIsOld(),false,darkMode);
         recyclerView.setAdapter(mAdapter);
     }
@@ -590,7 +592,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    //hides add task layout on done button click
     public void done(View view) {
         et.setVisibility(View.GONE);
         bt.setVisibility(View.GONE);

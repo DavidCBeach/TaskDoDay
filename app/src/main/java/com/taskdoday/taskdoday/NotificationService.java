@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -95,7 +95,6 @@ public class NotificationService extends IntentService {
     }
     private void ForegroundNotification() {
         Read();
-        Log.d("test","notifying");
         if(mContents.isEmpty()){
             System.out.println("No Pending Task");
             return;

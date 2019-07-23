@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
