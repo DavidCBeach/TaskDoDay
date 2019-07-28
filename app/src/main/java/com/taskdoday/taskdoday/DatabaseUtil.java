@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -83,7 +83,6 @@ public class DatabaseUtil {
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
         values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, dateMilli );
-        System.out.println(calendar.getTimeInMillis());
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);

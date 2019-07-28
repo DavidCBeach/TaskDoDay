@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;

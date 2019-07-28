@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;

@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -104,9 +104,7 @@ public class MyNewIntentService extends IntentService {
 
 
 
-        System.out.println("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
         Calendar temp =  Calendar.getInstance();
-        System.out.println(temp.getTime());
         Intent intente = new Intent(this, MainActivity.class);
         intente.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intente, 0);

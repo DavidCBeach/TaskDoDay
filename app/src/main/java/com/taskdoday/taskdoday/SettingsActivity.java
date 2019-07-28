@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.app.ActionBar;
 import android.app.AlarmManager;
@@ -25,6 +25,8 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.taskdoday.taskdoday.BuildConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
             rollover.setChecked(false);
 
         TextView version = findViewById(R.id.version);
-        version.setText("Version: "+BuildConfig.VERSION_NAME);
+        version.setText("Version: "+ BuildConfig.VERSION_NAME);
 
 
 
@@ -149,8 +151,6 @@ public class SettingsActivity extends AppCompatActivity {
                 String minute = renumber2.getText().toString();
                 int ihour = Integer.parseInt(hour);
                 int iminute = Integer.parseInt(minute);
-                System.out.println(reampm.getText().toString());
-                System.out.println(ihour);
                 if(reampm.getText().toString().equals("pm") && ihour != 12){
                     ihour+=12;
                 }
@@ -302,20 +302,16 @@ public class SettingsActivity extends AppCompatActivity {
     private void setNotif(int hour, int minute){
         TextView reampm = findViewById(R.id.reampm);
         Calendar tempcal = Calendar.getInstance();
-        Log.d("test",Integer.toString(hour));
         Calendar actualTime = Calendar.getInstance();
         SimpleDateFormat mdformat = new SimpleDateFormat("HH");
         String hourActual =  mdformat.format(actualTime.getTime());
         int ihourActual = Integer.valueOf(hourActual);
         if(ihourActual > 12){
             hour=(hour +12)%24;
-        }
-        Log.d("test",Integer.toString(hour));
-        Log.d("test",Integer.toString(minute));
+        };
         tempcal.add(Calendar.DAY_OF_MONTH, -1);
         tempcal.set(Calendar.HOUR, hour);
         tempcal.set(Calendar.MINUTE, minute);
-        Log.d("test",tempcal.getTime().toString());
         Intent notifyIntent = new Intent(this,MyReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast
                 (getApplicationContext(), 3, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -354,10 +350,6 @@ public class SettingsActivity extends AppCompatActivity {
         TextView renumber2 = findViewById(R.id.renumber2);
         TextView reampm = findViewById(R.id.reampm);
         int hoursactual = mHours%12;
-        System.out.println("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-        System.out.println(mHours);
-        System.out.println(hoursactual);
-        System.out.println(mMinutes);
         if(hoursactual==0){
             renumber1.setText("12");
         } else {

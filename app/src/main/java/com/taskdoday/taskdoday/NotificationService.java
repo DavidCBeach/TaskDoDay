@@ -1,11 +1,10 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -14,35 +13,35 @@ import android.graphics.Color;
 import android.provider.BaseColumns;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MyNewIntentServiceRollover extends IntentService {
+public class NotificationService extends IntentService {
     private static final int NOTIFICATION_ID = 3;
     private String allcontent;
     private ArrayList<String> mContents;
-    Calendar calendar;
-    FeedReaderDbHelper dbHelper;
-    public MyNewIntentServiceRollover() {
-        super("MyNewIntentService");
+    public NotificationService() {
+        super("NotificationService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
 
 
-        startForeground(1338,buildForegroundNotification());
+       // startForeground(1338,buildForegroundNotification());
 
-        Rollover();
+        ForegroundNotification();
 
         stopForeground(true);
         //notificationManager.notify(1, builder.build());
 
     }
-    private void Rollover(){
-        dbHelper = new FeedReaderDbHelper(getApplicationContext());
+    private void Read(){
+        FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
@@ -59,7 +58,7 @@ public class MyNewIntentServiceRollover extends IntentService {
         //String[] selectionArgs = { "My Title" };
         SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
         String sortOrder = FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS + " ASC," + FeedReaderContract.FeedEntry._ID + " DESC";
-        calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         String strDate =  mdformat.format(calendar.getTime());
         String[] selectionArgs = {strDate, "0"};
 
@@ -75,48 +74,69 @@ public class MyNewIntentServiceRollover extends IntentService {
                 null,                   // don't filter by row groups
                 sortOrder               // The sort order
         );
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR,0);
-        calendar.set(Calendar.MINUTE,1);
+        mContents = new ArrayList<>();
+        allcontent = new String();
+        ArrayList<String> listCon = new ArrayList();
         while(cursor.moveToNext()) {
             String content = cursor.getString(
                     cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
-            rolloverWrite(content);
+            allcontent = allcontent + content + "\n";
+            mContents.add(content);
+
         }
-        if(mContents.isEmpty()){
-            return;
+        while(cursor.moveToNext()) {
+
         }
+
         cursor.close();
         db.close();
 
 
     }
-    private void rolloverWrite(String content) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        SimpleDateFormat mdformat = new SimpleDateFormat("MM/dd/yyyy");
-        //the below 2 lines is for backlogging 1 week of task for testing purposes
-//     calendar.add(5,-7);
-//     String strDate =  mdformat.format(calendar.getTime());
+    private void ForegroundNotification() {
+        Read();
+        if(mContents.isEmpty()){
+            System.out.println("No Pending Task");
+            return;
+        }
+        String content = "You have " + mContents.size() + " unfinished task to complete today";
 
-        Long dateMilli = calendar.getTimeInMillis();
-        String strDate =  mdformat.format(calendar.getTime());
-        String date = strDate;
-        Integer status = 0;
-        //and this line
-//              calendar.add(5,7);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT , content);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_STATUS, status);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE, date);
-        values.put(FeedReaderContract.FeedEntry.COLUMN_NAME_DATE_MILLI, dateMilli );
-        System.out.println(calendar.getTimeInMillis());
+        Calendar temp =  Calendar.getInstance();
+        Intent intente = new Intent(this, MainActivity.class);
+        intente.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intente, 0);
 
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
-        System.out.println(newRowId);
-        db.close();
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1338")
+                .setSmallIcon(R.drawable.ic_check_box_black_24dp)
+                .setContentTitle("Daily Reminder")
+                .setContentText(content)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(allcontent))
+                .setContentIntent(pendingIntent)
+                .setWhen(temp.getTimeInMillis())
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+            NotificationManager mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel("3", "NOTIFICATION_CHANNEL_NAME", importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            assert mNotificationManager != null;
+            builder.setChannelId("3");
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+        notificationManager.notify(1, builder.build());
+
     }
-
     private Notification buildForegroundNotification() {
         NotificationCompat.Builder b=new NotificationCompat.Builder(this);
 

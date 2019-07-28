@@ -1,4 +1,4 @@
-package com.example.taskdoday;
+package com.taskdoday.taskdoday;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -177,7 +177,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>  {
                             holder.checkView.setTextColor(Color.parseColor("#5A5A5A"));
                         }
                     }
-                    System.out.println(deletables);
 
                 }
             });
