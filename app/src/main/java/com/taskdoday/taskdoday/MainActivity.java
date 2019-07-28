@@ -135,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
         setSwipes();
 
     }
+
+
+
     public void notificationSetup() throws JSONException {
 
         SharedPreferences prefs = getSharedPreferences("com.exmample.taskdoday", MODE_PRIVATE);
@@ -318,7 +321,8 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < deletables.size(); i++){
             deleteList = deleteList + deletables.get(i) + ",";
         }
-        db.execSQL("delete from "+FeedReaderContract.FeedEntry.TABLE_NAME+" where "+FeedReaderContract.FeedEntry._ID+" in ("+deleteList.substring(0,deleteList.length()-1)+")");
+        if(!deleteList.isEmpty())
+            db.execSQL("delete from "+FeedReaderContract.FeedEntry.TABLE_NAME+" where "+FeedReaderContract.FeedEntry._ID+" in ("+deleteList.substring(0,deleteList.length()-1)+")");
         db.close();
         SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.atton));
         SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.attonu));
@@ -598,11 +602,15 @@ public class MainActivity extends AppCompatActivity {
         bt.setVisibility(View.GONE);
         done.setVisibility(View.GONE);
 
-        InputMethodManager inputManager = (InputMethodManager)
-                getSystemService(Context.INPUT_METHOD_SERVICE);
+//        InputMethodManager inputManager = (InputMethodManager)
+//                getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
+//        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+//                InputMethodManager.HIDE_NOT_ALWAYS);
+        InputMethodManager manager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (manager != null) {
+            manager.hideSoftInputFromWindow(this.findViewById(android.R.id.content).getWindowToken(), 0);
+        }
 
         SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.atton));
         SlideAnimationUtil.slideInFromTopSlow(getApplicationContext(), findViewById(R.id.attonu));

@@ -32,7 +32,7 @@ public class NotificationService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
 
-        startForeground(1338,buildForegroundNotification());
+       // startForeground(1338,buildForegroundNotification());
 
         ForegroundNotification();
 
@@ -107,7 +107,7 @@ public class NotificationService extends IntentService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intente, 0);
 
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "1338")
                 .setSmallIcon(R.drawable.ic_check_box_black_24dp)
                 .setContentTitle("Daily Reminder")
                 .setContentText(content)
@@ -131,7 +131,7 @@ public class NotificationService extends IntentService {
             notificationChannel.enableVibration(true);
             notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             assert mNotificationManager != null;
-            builder.setChannelId("1338");
+            builder.setChannelId("3");
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
         notificationManager.notify(1, builder.build());

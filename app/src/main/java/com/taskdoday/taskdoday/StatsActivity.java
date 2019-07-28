@@ -29,13 +29,13 @@ public class StatsActivity extends AppCompatActivity {
         dbHelper = new FeedReaderDbHelper(getApplicationContext());
         themeRead();
         setTitle("Statistics");
-        calendar = Calendar.getInstance();
+
         percentRead();
 
 
     }
     private void percentRead(){
-
+        calendar = Calendar.getInstance();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM");
         String month =  mdformat.format(calendar.getTime());
@@ -47,7 +47,7 @@ public class StatsActivity extends AppCompatActivity {
         String year =  ymdformat.format(calendar.getTime());
         int iyear= Integer.parseInt(year);
         calendar.set(iyear,imonth-1,iday,0,0);
-
+        //System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"+calendar.getTime());
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
@@ -87,7 +87,10 @@ public class StatsActivity extends AppCompatActivity {
             } else {
                 list1.add(status);
             }
-
+            //Temp testing stuff
+//            String content = cursor.getString(
+//                    cursor.getColumnIndexOrThrow(FeedReaderContract.FeedEntry.COLUMN_NAME_CONTENT));
+//            System.out.println(content + status);
 
         }
         if(!(list0.isEmpty() && list1.isEmpty())){
